@@ -3,10 +3,10 @@ const dbTasks = [
     {
         id: 'task-1',
         type: 'follow',
-        title: 'wurk.fun Official X Account Follow',
-        link: 'https://x.com/wurkdotfun',
+        title: 'earn.cool Official X Account Follow',
+        link: 'https://x.com/earndotcool',
         reward: 100,
-        creator: 'Wurk Admin',
+        creator: 'earn.cool Admin',
         capacity: 1000,
         completedCount: 421,
         completedBy: [],
@@ -121,7 +121,7 @@ function renderTaskList() {
         grid.innerHTML = `
             <div style="grid-column: span 2; text-align: center; padding: 4rem; color: var(--text-muted);">
                 <i data-lucide="inbox" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
-                <p style="font-size: 1.1rem; font-weight: 600;">Bu kategoride aktif görev bulunamadı.</p>
+                <p style="font-size: 1.1rem; font-weight: 600;">No active tasks found in this category.</p>
             </div>
         `;
         lucide.createIcons();
@@ -138,9 +138,9 @@ function renderTaskList() {
         // Quality Badge display
         let qualityBadgeHTML = '';
         if (task.verifiedOnly) {
-            qualityBadgeHTML = `<span style="font-size: 0.7rem; background: rgba(29,161,242,0.12); color:#1da1f2; border:1px solid rgba(29,161,242,0.25); padding: 0.15rem 0.4rem; border-radius: 4px; font-weight:700;"><i data-lucide="badge-check" style="width: 10px; height:10px; display:inline-block; vertical-align:middle; margin-right:2px;"></i>Mavi Tik Gerekli</span>`;
+            qualityBadgeHTML = `<span style="font-size: 0.7rem; background: rgba(29,161,242,0.12); color:#1da1f2; border:1px solid rgba(29,161,242,0.25); padding: 0.15rem 0.4rem; border-radius: 4px; font-weight:700;"><i data-lucide="badge-check" style="width: 10px; height:10px; display:inline-block; vertical-align:middle; margin-right:2px;"></i>Verified Required</span>`;
         } else if (task.minSorsa > 0) {
-            qualityBadgeHTML = `<span style="font-size: 0.7rem; background: rgba(168,85,247,0.12); color:var(--primary); border:1px solid rgba(168,85,247,0.25); padding: 0.15rem 0.4rem; border-radius: 4px; font-weight:700;"><i data-lucide="shield-check" style="width: 10px; height:10px; display:inline-block; vertical-align:middle; margin-right:2px;"></i>Sorsa > 0 Gerekli</span>`;
+            qualityBadgeHTML = `<span style="font-size: 0.7rem; background: rgba(168,85,247,0.12); color:var(--primary); border:1px solid rgba(168,85,247,0.25); padding: 0.15rem 0.4rem; border-radius: 4px; font-weight:700;"><i data-lucide="shield-check" style="width: 10px; height:10px; display:inline-block; vertical-align:middle; margin-right:2px;"></i>Sorsa > 0 Required</span>`;
         }
         
         // Define action button based on state
@@ -148,11 +148,11 @@ function renderTaskList() {
         if (!state.wallet.connected) {
             actionBtnHTML = `<button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.45rem 0.9rem;" onclick="openConnectWalletModal()">Connect Wallet</button>`;
         } else if (!state.social.connected) {
-            actionBtnHTML = `<button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; border-color: rgba(29, 161, 242, 0.4); color: #1da1f2;" onclick="openConnectSocialModal()">X Hesabı Bağla</button>`;
+            actionBtnHTML = `<button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; border-color: rgba(29, 161, 242, 0.4); color: #1da1f2;" onclick="openConnectSocialModal()">Connect X Account</button>`;
         } else if (isCompleted) {
             actionBtnHTML = `
                 <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.45rem 0.9rem; background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); color: var(--text-success); cursor: default;" disabled>
-                    <i data-lucide="check" style="width: 14px;"></i> Tamamlandı
+                    <i data-lucide="check" style="width: 14px;"></i> Completed
                 </button>
             `;
         } else {
@@ -175,7 +175,7 @@ function renderTaskList() {
             
             <div class="task-card-bottom">
                 <div class="task-reward-box">
-                    <span class="task-reward-label">Kazanç</span>
+                    <span class="task-reward-label">Reward</span>
                     <span class="task-reward-value">
                         <i data-lucide="coins" style="width: 16px; color: var(--secondary);"></i>
                         ${task.reward} $EARN
@@ -183,7 +183,7 @@ function renderTaskList() {
                 </div>
                 
                 <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
-                    <div class="task-capacity">Katılım: <span>${task.completedCount}/${task.capacity}</span></div>
+                    <div class="task-capacity">Entries: <span>${task.completedCount}/${task.capacity}</span></div>
                     ${actionBtnHTML}
                 </div>
             </div>
@@ -196,11 +196,11 @@ function renderTaskList() {
 
 function getTaskTypeLabel(type) {
     switch (type) {
-        case 'follow': return 'Takip';
-        case 'like': return 'Beğeni';
+        case 'follow': return 'Follow';
+        case 'like': return 'Like';
         case 'repost': return 'Repost';
-        case 'feedback': return 'İnceleme';
-        default: return 'Görev';
+        case 'feedback': return 'Review';
+        default: return 'Task';
     }
 }
 
@@ -246,7 +246,7 @@ function toggleWurkSubmissions() {
                 </span>
                 <div style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 180px; overflow-y: auto; font-size: 0.8rem;">
                     ${task.completedCount === 0 ? `
-                        <div style="text-align: center; color: var(--text-muted); padding: 1rem 0;">Henüz gönderim yapılmadı. İlk siz olun!</div>
+                        <div style="text-align: center; color: var(--text-muted); padding: 1rem 0;">No submissions yet. Be the first!</div>
                     ` : `
                         <div style="display: flex; justify-content: space-between; padding: 0.4rem 0.5rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 6px;">
                             <span style="color: var(--secondary); font-family: monospace;">om8R...4s9 (Siz)</span>
@@ -295,7 +295,7 @@ function executeTaskAction(link) {
     if (btnApply) btnApply.style.display = 'none';
     if (btnVerify) btnVerify.style.display = 'inline-flex';
     
-    showToast('Görev sayfası açıldı! Lütfen etkileşimde bulunun ve kanıt formunu doldurun.', 'success');
+    showToast('Task page opened! Please complete the interaction and fill out the proof form.', 'success');
 }
 
 function openTaskDetail(taskId) {
@@ -305,7 +305,7 @@ function openTaskDetail(taskId) {
     
     // Generate simulated tweet verification code
     const rCode = Array.from({length: 4}, () => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
-    simulatedTaskCode = `CLICK-${rCode}-${Date.now().toString().slice(-4)}`;
+    simulatedTaskCode = `EARN-${rCode}-${Date.now().toString().slice(-4)}`;
     
     const task = dbTasks.find(t => t.id === taskId);
     if (!task) return;
@@ -361,13 +361,13 @@ function openTaskDetail(taskId) {
                 <span class="wurk-listed-by-address">${listedAddress}</span>
             </div>
             <div class="wurk-listed-by-actions">
-                <button class="wurk-listed-by-action-btn" onclick="showToast('Raporlama simüle edildi.', 'warning')">
+                <button class="wurk-listed-by-action-btn" onclick="showToast('Report simulated.', 'warning')">
                     <i data-lucide="alert-triangle" style="width: 14px;"></i> Report
                 </button>
-                <button class="wurk-listed-by-action-btn" onclick="showToast('Geliştirici bilgileri doğrulanmış Solana emanet cüzdanındadır.', 'success')">
+                <button class="wurk-listed-by-action-btn" onclick="showToast('Developer info is in a verified Solana escrow wallet.', 'success')">
                     <i data-lucide="info" style="width: 14px;"></i> Info
                 </button>
-                <button class="wurk-listed-by-action-btn" onclick="showToast('Görev yer işaretlerine eklendi!', 'success')" style="padding: 0.4rem;">
+                <button class="wurk-listed-by-action-btn" onclick="showToast('Task added to bookmarks!', 'success')" style="padding: 0.4rem;">
                     <i data-lucide="bookmark" style="width: 16px;"></i>
                 </button>
             </div>
@@ -456,7 +456,7 @@ function openTaskDetail(taskId) {
                 follow this x account: <a href="${task.link}" target="_blank" class="gradient-text-cyan" style="word-break: break-all; font-weight: 700;">${task.link}</a>
             </div>
             <div style="text-align: right; margin-top: 0.5rem;">
-                <button class="wurk-listed-by-action-btn" onclick="showToast('Açıklama Türkçe\\'ye çevrildi!', 'success')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                <button class="wurk-listed-by-action-btn" onclick="showToast('Description translated!', 'success')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
                     <i data-lucide="globe" style="width: 12px;"></i> Translate description
                 </button>
             </div>
@@ -466,14 +466,14 @@ function openTaskDetail(taskId) {
         <div class="job-meta-box" style="margin-bottom: 1.25rem; border-color: rgba(168, 85, 247, 0.2); background: rgba(168, 85, 247, 0.01);" id="verificationContainerBox">
             <div class="job-meta-title" style="border-bottom-color: rgba(168,85,247,0.1); color: var(--primary);">
                 <i data-lucide="shield-check" style="width: 14px; color: var(--primary);"></i>
-                Kanıt Doğrulama Sistemi (Proof System)
+                Proof Verification System
             </div>
             
             <div id="verificationInnerContent">
                 <!-- Locked / Before Action State -->
                 <div style="text-align: center; padding: 1rem 0;" id="verificationLockedState">
                     <i data-lucide="lock" style="width: 24px; height: 24px; color: var(--primary); margin-bottom: 0.5rem; opacity: 0.8;"></i>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">Please click APPLY first to launch the task and unlock the verification steps. (<b>APPLY</b> butonuna basın).</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">Please click APPLY first to launch the task and unlock the verification steps.</p>
                 </div>
 
                 <!-- Active State (hidden initially, shown on executeTaskAction) -->
@@ -482,20 +482,20 @@ function openTaskDetail(taskId) {
                     ${task.verifiedOnly ? `
                         <div style="background: rgba(29, 161, 242, 0.04); border:1px solid rgba(29, 161, 242, 0.15); padding:0.75rem 1rem; border-radius:10px; display:flex; align-items:center; gap:0.5rem; font-size:0.85rem;">
                             <i data-lucide="badge-check" style="color:#1da1f2; width:18px;"></i>
-                            <span style="color:#1da1f2;"><b>Hedef Kitle Filtresi:</b> Bu görevi sadece <b>Mavi Tikli (Verified)</b> hesaplar yapabilir.</span>
+                            <span style="color:#1da1f2;"><b>Audience Filter:</b> Only <b>Verified (Blue Check)</b> accounts can complete this task.</span>
                         </div>
                     ` : ''}
                     ${task.minSorsa > 0 ? `
                         <div style="background: rgba(168, 85, 247, 0.04); border:1px solid rgba(168, 85, 247, 0.15); padding:0.75rem 1rem; border-radius:10px; display:flex; align-items:center; gap:0.5rem; font-size:0.85rem;">
                             <i data-lucide="shield-check" style="color:var(--primary); width:18px;"></i>
-                            <span style="color:var(--primary);"><b>Hedef Kitle Filtresi:</b> Bu görevi sadece <b>Sorsa Skoru > 0</b> olan güvenilir hesaplar yapabilir.</span>
+                            <span style="color:var(--primary);"><b>Audience Filter:</b> Only trusted accounts with a <b>Sorsa Score > 0</b> can complete this task.</span>
                         </div>
                     ` : ''}
 
                     <!-- Proof Method Selection tabs -->
                     <div class="tab-buttons" style="background: rgba(255,255,255,0.02); border-color:var(--border-color);">
-                        <button type="button" class="tab-btn buy active" id="proof-oauth" onclick="switchProofMethod('oauth')" style="font-size:0.8rem; padding:0.5rem; font-weight: 700;">Otomatik Doğrula (OAuth API)</button>
-                        <button type="button" class="tab-btn buy" id="proof-manual" onclick="switchProofMethod('manual')" style="font-size:0.8rem; padding:0.5rem; font-weight: 700;">Tweet Kodu İle Doğrula (Manuel)</button>
+                        <button type="button" class="tab-btn buy active" id="proof-oauth" onclick="switchProofMethod('oauth')" style="font-size:0.8rem; padding:0.5rem; font-weight: 700;">Auto Verify (OAuth API)</button>
+                        <button type="button" class="tab-btn buy" id="proof-manual" onclick="switchProofMethod('manual')" style="font-size:0.8rem; padding:0.5rem; font-weight: 700;">Verify with Tweet Code (Manual)</button>
                     </div>
 
                     <!-- Dynamic proof flow area -->
@@ -506,7 +506,7 @@ function openTaskDetail(taskId) {
                                 <span class="verify-step-check">✓</span>
                                 <div>
                                     <div style="font-weight: 700; color: var(--text-success);">Start Task & Engage</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Target page opened. Complete the interaction on X. Şimdi doğrulamayı tamamlayın.</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Target page opened. Complete the interaction on X. Now complete the verification.</div>
                                 </div>
                             </div>
                             
@@ -570,7 +570,7 @@ function switchProofMethod(method) {
                     <span class="verify-step-check">${stepActionDone ? '✓' : '1'}</span>
                     <div>
                         <div style="font-weight: 700;">Start Task & Engage</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Aşağıdaki butona tıklayarak hedef X sayfasını açın ve gerekli görevi yerine getirin.</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Click the button below to open the target X page and complete the required task.</div>
                     </div>
                 </div>
                 
@@ -590,16 +590,16 @@ function switchProofMethod(method) {
         dynamicArea.innerHTML = `
             <div style="display:flex; flex-direction:column; gap:1rem;">
                 <div style="background: rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:1rem; border-radius:12px; display:flex; flex-direction:column; gap:0.5rem;">
-                    <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">1. BU KODU X HESABINIZDA TWEET OLARAK PAYLAŞIN:</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">1. POST THIS CODE AS A TWEET ON YOUR X ACCOUNT:</span>
                     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); padding:0.6rem 1rem; border-radius:8px;">
                         <code style="font-weight:800; color:var(--secondary); font-size:1.05rem;">I am verifying my X profile on earn.cool with code ${simulatedTaskCode}</code>
-                        <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.7rem; border-radius:4px;" onclick="navigator.clipboard.writeText('I am verifying my X profile on earn.cool with code ${simulatedTaskCode}'); showToast('Doğrulama şablonu kopyalandı! X\\'te paylaşın.', 'success')">Kopyala</button>
+                        <button class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.7rem; border-radius:4px;" onclick="navigator.clipboard.writeText('I am verifying my X profile on earn.cool with code ${simulatedTaskCode}'); showToast('Verification template copied! Share it on X.', 'success')">Copy</button>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="manualProofTweetUrl" style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">2. TWEET BAĞLANTISINI (URL) BURAYA YAPIŞTIRIN:</label>
-                    <input type="url" class="form-input" id="manualProofTweetUrl" placeholder="Örn: https://x.com/kullanici/status/12345" oninput="checkManualProofInput()">
+                    <label for="manualProofTweetUrl" style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">2. PASTE THE TWEET LINK (URL) HERE:</label>
+                    <input type="url" class="form-input" id="manualProofTweetUrl" placeholder="e.g. https://x.com/username/status/12345" oninput="checkManualProofInput()">
                 </div>
             </div>
         `;
@@ -801,25 +801,25 @@ function updateFormPlaceholders() {
     const inpLink = document.getElementById('taskLink');
     
     if (type === 'follow') {
-        lblTitle.innerText = 'X Hesabı Başlığı (Takip Edilecek)';
-        inpTitle.placeholder = 'Örn: Solana earn.cool Official Account Follow';
-        lblLink.innerText = 'X Sayfa Linki (Profil URL)';
-        inpLink.placeholder = 'Örn: https://x.com/earndotcool';
+        lblTitle.innerText = 'X Account Title (To Follow)';
+        inpTitle.placeholder = 'e.g. Solana earn.cool Official Account Follow';
+        lblLink.innerText = 'X Page Link (Profile URL)';
+        inpLink.placeholder = 'e.g. https://x.com/earndotcool';
     } else if (type === 'like') {
-        lblTitle.innerText = 'Görüntülenecek Tweet Başlığı (Beğenilecek)';
-        inpTitle.placeholder = 'Örn: earn.cool Devs Büyük Ortaklık tweetini beğen';
-        lblLink.innerText = 'Tweet Bağlantısı (URL)';
-        inpLink.placeholder = 'Örn: https://x.com/earndotcool/status/1234567890';
+        lblTitle.innerText = 'Tweet Title to Display (To Like)';
+        inpTitle.placeholder = 'e.g. Like the earn.cool Devs Major Partnership tweet';
+        lblLink.innerText = 'Tweet Link (URL)';
+        inpLink.placeholder = 'e.g. https://x.com/earndotcool/status/1234567890';
     } else if (type === 'repost') {
-        lblTitle.innerText = 'Retweet Edilecek Post Başlığı';
-        inpTitle.placeholder = 'Örn: $EARN lansman gönderisini repost yap ve yay';
-        lblLink.innerText = 'Tweet Bağlantısı (URL)';
-        inpLink.placeholder = 'Örn: https://x.com/earndotcool/status/987654321';
+        lblTitle.innerText = 'Post Title to Retweet';
+        inpTitle.placeholder = 'e.g. Repost and spread the $EARN launch post';
+        lblLink.innerText = 'Tweet Link (URL)';
+        inpLink.placeholder = 'e.g. https://x.com/earndotcool/status/987654321';
     } else if (type === 'feedback') {
-        lblTitle.innerText = 'Geri Bildirim Görev Başlığı';
-        inpTitle.placeholder = 'Örn: earn.cool Web Sitesini test et ve inceleme yaz';
-        lblLink.innerText = 'İnceleme Web Sayfası URL';
-        inpLink.placeholder = 'Örn: https://earn.cool/feedback';
+        lblTitle.innerText = 'Feedback Task Title';
+        inpTitle.placeholder = 'e.g. Test the earn.cool website and write a review';
+        lblLink.innerText = 'Review Web Page URL';
+        inpLink.placeholder = 'e.g. https://earn.cool/feedback';
     }
 }
 
@@ -837,17 +837,17 @@ function calculateCampaignCost() {
     const qualityVal = document.getElementById('summaryQualityFee');
     
     if (qualityFilter === 'verified') {
-        qualityFee = baseReward * 0.20; // 20% Verified kitle fee
+        qualityFee = baseReward * 0.20; // 20% Verified audience fee
         if (qualityRow) {
             qualityRow.style.display = 'flex';
-            qualityLabel.innerText = 'Mavi Tik Hedefleme (+20%):';
+            qualityLabel.innerText = 'Verified Targeting (+20%):';
             qualityVal.innerText = `${qualityFee.toLocaleString()} $EARN`;
         }
     } else if (qualityFilter === 'sorsa') {
-        qualityFee = baseReward * 0.15; // 15% Sorsa > 0 kitle fee
+        qualityFee = baseReward * 0.15; // 15% Sorsa > 0 audience fee
         if (qualityRow) {
             qualityRow.style.display = 'flex';
-            qualityLabel.innerText = 'Sorsa Skoru Hedefleme (+15%):';
+            qualityLabel.innerText = 'Sorsa Score Targeting (+15%):';
             qualityVal.innerText = `${qualityFee.toLocaleString()} $EARN`;
         }
     } else {
@@ -887,7 +887,7 @@ async function handleCreateCampaign(event) {
     const totalCost = baseReward + fee + qualityFee;
     
     if (state.wallet.balanceEARN < totalCost) {
-        showToast(`Yetersiz bakiye! Required: ${totalCost.toLocaleString()} $EARN, Balance: ${state.wallet.balanceEARN.toLocaleString()} $EARN.`, 'error');
+        showToast(`Insufficient balance! Required: ${totalCost.toLocaleString()} $EARN, Balance: ${state.wallet.balanceEARN.toLocaleString()} $EARN.`, 'error');
         return;
     }
     
@@ -954,7 +954,7 @@ function addCampaignToMyList(task, cost) {
     const myCampaignsContainer = document.getElementById('myCampaignsList');
     if (!myCampaignsContainer) return;
     
-    if (myCampaignsContainer.innerHTML.includes('Henüz bir kampanya yayınlamadınız')) {
+    if (myCampaignsContainer.innerHTML.includes('You have not published any campaigns yet')) {
         myCampaignsContainer.innerHTML = '';
     }
     
@@ -970,7 +970,7 @@ function addCampaignToMyList(task, cost) {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
             <div>
                 <h4 style="font-size: 0.95rem; font-weight: 700; line-height: 1.3;">${task.title}</h4>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">Tür: ${getTaskTypeLabel(task.type)}</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Type: ${getTaskTypeLabel(task.type)}</span>
             </div>
             <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">${cost.toLocaleString()} $EARN</span>
         </div>

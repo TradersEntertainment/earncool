@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,7 +97,7 @@
                     <div class="hero-tag">🚀 WEB3 MICRO-TASK REVOLUTION</div>
                     <h1 class="hero-title">
                         Engage in Social Media, <br>
-                        <span class="gradient-text-purple">Kripto Karşılığı</span> Kazanç Sağla!
+                        <span class="gradient-text-purple">Earn Crypto</span> Rewards!
                     </h1>
                     <p class="hero-subtitle">
                         Connect your Solana wallet and X (Twitter) account in seconds. Complete follow, like, and repost tasks to start earning <b>$EARN</b> and <b>SOL</b> instantly!
@@ -120,12 +120,12 @@
                         </div>
                         <div class="glass-card stat-card">
                             <span class="label">Completed Tasks</span>
-                            <span class="value" id="statCompleted">43,124 Görev</span>
+                            <span class="value" id="statCompleted">43,124 Tasks</span>
                             <span class="change up">▲ %8.7 today</span>
                         </div>
                         <div class="glass-card stat-card">
                             <span class="label">Active Workers</span>
-                            <span class="value purple" id="statActiveUsers">1,248 Kullanıcı</span>
+                            <span class="value purple" id="statActiveUsers">1,248 Users</span>
                             <span class="change up">▲ %15.3 this hour</span>
                         </div>
                         <div class="glass-card stat-card">
@@ -179,7 +179,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 2: WORKER DASHBOARD (GÖREV PAZARI) -->
+            <!-- SECTION 2: WORKER DASHBOARD (TASK MARKET) -->
             <section id="section-worker" class="page-section">
                 <div class="dashboard-layout">
                     
@@ -207,7 +207,7 @@
                     <div class="tasks-container">
                         <div class="dashboard-header">
                             <div class="dashboard-info">
-                                <h2>Mikro Task Market</h2>
+                                <h2>Micro Task Market</h2>
                                 <p>Earn crypto rewards by completing active social media microtasks.</p>
                             </div>
                             <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
@@ -223,14 +223,14 @@
                 </div>
             </section>
 
-            <!-- SECTION 3: CAMPAIGN CREATOR (REKLAM VEREN KAMPANYA PANELİ) -->
+            <!-- SECTION 3: CAMPAIGN CREATOR (ADVERTISER CAMPAIGN PANEL) -->
             <section id="section-creator" class="page-section">
                 <div style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem;">
                     
                     <!-- Creator Form Card -->
                     <div class="glass-card">
                         
-                        <!-- Quick Jobs Panel Accordion (matching wurk.fun preset screenshot) -->
+                        <!-- Quick Jobs Panel Accordion (matching earn.cool preset screenshot) -->
                         <div class="preset-list-container active" id="quickJobsAccordion">
                             <button type="button" class="preset-category-header" onclick="toggleQuickJobsAccordion()">
                                 <span style="display: flex; align-items: center; gap: 0.5rem; font-weight: 800;">
@@ -293,18 +293,18 @@
                                         <option value="follow">X Follow (Follow Account)</option>
                                         <option value="like">X Like (Like Tweet)</option>
                                         <option value="repost">X Repost Tweet</option>
-                                        <option value="feedback">Feedback (Ziyaret & İnceleme)</option>
+                                        <option value="feedback">Feedback (Visit &amp; Review)</option>
                                     </select>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="taskTitle" id="lblTaskTitle">Campaign Title</label>
-                                    <input type="text" class="form-input" id="taskTitle" placeholder="Örn: Solana earn.cool Resmi Hesabını Takip Et" required>
+                                    <input type="text" class="form-input" id="taskTitle" placeholder="e.g. Follow Solana earn.cool Official Account" required>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="taskLink" id="lblTaskLink">X Link / Target URL</label>
-                                    <input type="url" class="form-input" id="taskLink" placeholder="Örn: https://x.com/earndotcool" required>
+                                    <input type="url" class="form-input" id="taskLink" placeholder="e.g. https://x.com/earndotcool" required>
                                     <span class="form-hint">The full URL where the worker will be redirected to perform the task.</span>
                                 </div>
                                 
@@ -354,7 +354,7 @@
                                         <span id="summaryFee">500 $EARN</span>
                                     </div>
                                     <div class="summary-row" id="summaryQualityRow" style="display: none; color: var(--primary); font-weight: 600;">
-                                        <span id="summaryQualityLabel">Verified Hedefleme (+20%):</span>
+                                        <span id="summaryQualityLabel">Verified Targeting (+20%):</span>
                                         <span id="summaryQualityFee">5,000 $EARN</span>
                                     </div>
                                     <div class="summary-row total">
@@ -405,19 +405,19 @@
                     <div class="glass-card" style="display: flex; flex-direction: column; gap: 1.5rem;">
                         <div class="chart-header">
                             <div class="token-info">
-                                <div class="token-logo">C</div>
+                                <div class="token-logo">E</div>
                                 <div class="token-meta">
                                     <div class="token-name-symbol">
                                         <span class="token-name">earn.cool Token</span>
                                         <span class="token-symbol">$EARN</span>
                                     </div>
-                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Solana Smart Contract: <code style="color: var(--secondary);">cLick...PumP</code></span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Solana Smart Contract: <code style="color: var(--secondary);">eArN...CooL</code></span>
                                 </div>
                             </div>
                             
                             <div class="token-price-display">
                                 <span class="token-price-val" id="chartTokenPriceVal">0.000242 SOL</span>
-                                <span class="token-price-change" id="chartPriceChangeVal">▲ %22.42 (24s)</span>
+                                <span class="token-price-change" id="chartPriceChangeVal">▲ +22.42% (24h)</span>
                             </div>
                         </div>
                         
@@ -480,7 +480,7 @@
                                 </div>
                                 <div class="summary-row">
                                     <span>Price Impact:</span>
-                                    <span id="tradePriceImpact" style="color: var(--text-success);">%0.05 (Pozitif)</span>
+                                    <span id="tradePriceImpact" style="color: var(--text-success);">0.05% (Positive)</span>
                                 </div>
                             </div>
                             
@@ -500,7 +500,7 @@
                 </div>
             </section>
 
-            <!-- SECTION 5: VAULT (KASA & GELİR PAYLAŞIMI) -->
+            <!-- SECTION 5: VAULT (VAULT & REVENUE SHARING) -->
             <section id="section-vault" class="page-section">
                 <div style="display: flex; flex-direction: column; gap: 2rem;">
                     
@@ -525,7 +525,7 @@
                         <div class="glass-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2.5rem; gap: 0.75rem; border: 1px solid rgba(168, 85, 247, 0.2); box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);">
                             <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">NEXT DISTRIBUTION</span>
                             <h2 style="font-size: 3.5rem; font-weight: 800; color: #a855f7; text-shadow: 0 0 20px rgba(168, 85, 247, 0.3); font-family: monospace; letter-spacing: 2px;" id="vaultCountdownText">10:54:39</h2>
-                            <span style="font-size: 0.85rem; color: var(--text-muted);" id="vaultNextDateText">01.06.2026 23:58:24 on</span>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);" id="vaultNextDateText">on 06/01/2026 23:58:24</span>
                         </div>
                     </div>
 
@@ -612,10 +612,10 @@
                             <table class="leaderboard-table" style="margin-top: 0;">
                                 <thead>
                                     <tr>
-                                        <th>Cüzdan (Wallet)</th>
-                                        <th>Miktar ($EARN)</th>
-                                        <th>LP Uygunluğu</th>
-                                        <th style="text-align: right;">Kasa Oranı (%)</th>
+                                        <th>Wallet</th>
+                                        <th>Amount ($EARN)</th>
+                                        <th>LP Eligibility</th>
+                                        <th style="text-align: right;">Vault Share (%)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="vaultPreviewDistributionBody">
@@ -623,7 +623,7 @@
                                 </tbody>
                             </table>
                             
-                            <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.5rem; width: 100%;" onclick="showToast('Daha fazla veri simülasyon aşamasındadır.', 'warning')">Daha Fazla Göster</button>
+                            <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.5rem; width: 100%;" onclick="showToast('More data is in simulation phase.', 'warning')">Show More</button>
                         </div>
                     </div>
 
@@ -632,19 +632,19 @@
                         <div style="margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.75rem;">
                             <h3 style="font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="dollar-sign" style="color: var(--text-success); width: 20px;"></i>
-                                Son Kasa Katkıları (Recent Vault Contributions)
+                                Recent Vault Contributions
                             </h3>
-                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Kullanıcıların tamamladığı görevlerin platform komisyon kesintilerinden kasaya aktarılan son katkılar.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Recent contributions transferred to the Vault from platform commission deductions on completed tasks.</p>
                         </div>
 
                         <!-- Contribution table -->
                         <table class="leaderboard-table" style="margin-top: 0;">
                             <thead>
                                 <tr>
-                                    <th>Tamamlanma Zamanı</th>
-                                    <th>Kasaya Katkı Miktarı</th>
-                                    <th>Görev (Job ID)</th>
-                                    <th>Açıklama / Sebep</th>
+                                    <th>Completion Time</th>
+                                    <th>Vault Contribution</th>
+                                    <th>Job ID</th>
+                                    <th>Description / Reason</th>
                                 </tr>
                             </thead>
                             <tbody id="vaultContributionsBody">
@@ -653,8 +653,8 @@
                         </table>
                         
                         <div style="display: flex; justify-content: center; margin-top: 1.25rem;">
-                            <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.5rem 1.5rem; border-radius: 100px; display: inline-flex; align-items: center; gap: 0.4rem;" onclick="showToast('Son 50 kasa işlem geçmişi arşivdedir.', 'warning')">
-                                <i data-lucide="history" style="width: 14px;"></i> Tüm Dağıtım Geçmişi
+                            <button class="btn btn-outline" style="font-size: 0.8rem; padding: 0.5rem 1.5rem; border-radius: 100px; display: inline-flex; align-items: center; gap: 0.4rem;" onclick="showToast('Last 50 vault transactions are archived.', 'warning')">
+                                <i data-lucide="history" style="width: 14px;"></i> Full Distribution History
                             </button>
                         </div>
                     </div>
@@ -662,15 +662,15 @@
                 </div>
             </section>
 
-            <!-- SECTION 6: LEADERBOARD (LİDERLİK) -->
+            <!-- SECTION 6: LEADERBOARD -->
             <section id="section-leaderboard" class="page-section">
                 <div class="glass-card">
                     <div style="margin-bottom: 2rem;">
                         <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem;">
                             <i data-lucide="award" style="color: var(--primary); width: 28px; height: 28px;"></i>
-                            Platform Leaderboard Tablosu
+                            Platform Leaderboard
                         </h2>
-                        <p style="color: var(--text-muted); font-size: 0.95rem;">En yüksek mikro-görev geliri elde eden çalışanlar ve topluluğu en çok büyüten reklam verenler.</p>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Top earners from micro-tasks and top sponsors growing the community.</p>
                     </div>
                     
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
@@ -679,14 +679,14 @@
                         <div>
                             <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="users" style="width: 20px;"></i>
-                                Top 10 Çalışan (Earners)
+                                Top 10 Earners
                             </h3>
                             <table class="leaderboard-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 60px;">Sıra</th>
-                                        <th>Kullanıcı (X / Cüzdan)</th>
-                                        <th style="text-align: right;">Kazanç ($EARN)</th>
+                                        <th style="width: 60px;">Rank</th>
+                                        <th>User (X / Wallet)</th>
+                                        <th style="text-align: right;">Earnings ($EARN)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="workersLeaderboardBody">
@@ -699,14 +699,14 @@
                         <div>
                             <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
                                 <i data-lucide="megaphone" style="width: 20px;"></i>
-                                Top 10 Sponsor (Creators)
+                                Top 10 Sponsors
                             </h3>
                             <table class="leaderboard-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 60px;">Sıra</th>
-                                        <th>Kampanya Sahibi</th>
-                                        <th style="text-align: right;">Kilitlenen SOL</th>
+                                        <th style="width: 60px;">Rank</th>
+                                        <th>Campaign Owner</th>
+                                        <th style="text-align: right;">Locked SOL</th>
                                     </tr>
                                 </thead>
                                 <tbody id="creatorsLeaderboardBody">
@@ -718,16 +718,16 @@
                 </div>
             </section>
 
-            <!-- SECTION 7: FAQ (SSS - SIKÇA SORULAN SORULAR) -->
+            <!-- SECTION 7: FAQ (FREQUENTLY ASKED QUESTIONS) -->
             <section id="section-faq" class="page-section">
                 <div class="glass-card" style="max-width: 900px; margin: 0 auto;">
                     <div style="text-align: center; margin-bottom: 3rem;">
                         <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">HELP CENTER</span>
                         <h2 style="font-size: 2.5rem; font-weight: 800; margin-top: 0.5rem; letter-spacing: -1px;">Frequently Asked Questions</h2>
-                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">earn.cool sisteminin işleyişi, X (Twitter) task verification, Vault kar payı dağıtımları ve and wallet connections.</p>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem;">Learn about earn.cool system operation, X task verification, Vault profit sharing, and wallet connections.</p>
                     </div>
 
-                    <!-- Group 1: Platform Temelleri -->
+                    <!-- Group 1: Platform Basics -->
                     <div style="margin-bottom: 2.5rem;">
                         <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--secondary); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                             <i data-lucide="info" style="width: 20px;"></i>
@@ -738,11 +738,11 @@
                             <!-- FAQ Item 1 -->
                             <div class="faq-item">
                                 <button class="faq-question" onclick="toggleFaqAccordion(this)">
-                                    <span>earn.cool nedir ve nasıl çalışır?</span>
+                                    <span>What is earn.cool and how does it work?</span>
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>earn.cool, Solana ağında çalışan, sosyal medya içerik üreticileri/projeler ile Web3 kullanıcılarını buluşturan merkezsiz bir mikro-görev platformudur. Reklam verenler (Creators) sosyal etkileşimi artırmak için bütçe kilitleyerek görevler açarlar. Kullanıcılar (Workers) ise cüzdanlarını bağlayıp bu görevleri yerine getirerek anında $EARN token kazanırlar.</p>
+                                    <p>earn.cool is a decentralized micro-task platform running on the Solana network that connects social media content creators/projects with Web3 users. Advertisers (Creators) open tasks by locking budgets to increase social engagement. Users (Workers) connect their wallets and complete these tasks to instantly earn $EARN tokens.</p>
                                 </div>
                             </div>
                             
@@ -753,7 +753,7 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Süreç oldukça basittir: Reklam veren bir kampanya oluşturur ve bütçeyi kilitler. Çalışan cüzdanını ve X hesabını bağlayarak "Task Market"ndaki aktif görevleri görür. Görevi açarak takip/beğeni/repost işlemini tamamlar. Geri dönüp doğruladığında sistem X API üzerinden işlemi denetler. Onay alınca kilitli bütçeden hak edilen pay çalışanın cüzdanına anında aktarılır.</p>
+                                    <p>The process is straightforward: An advertiser creates a campaign and locks the budget. A worker connects their wallet and X account to view active tasks in the Task Market. They open a task and complete the follow/like/repost action. When they return and verify, the system checks the interaction via the X API. Once approved, the earned share from the locked budget is instantly transferred to the worker's wallet.</p>
                                 </div>
                             </div>
 
@@ -764,7 +764,7 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Navbar'da yer alan "Connect Wallet" butonuna basarak desteklenen Solana cüzdanlarından (Phantom, Solflare) birini seçebilirsiniz. earn.cool tamamen non-custodial olup cüzdanınızın özel kelimelerine (seed phrases) asla erişemez ve sizden onay almadan hiçbir işlem gerçekleştiremez. Son derece güvenlidir.</p>
+                                    <p>Click the "Connect Wallet" button in the navbar and choose one of the supported Solana wallets (Phantom, Solflare). earn.cool is fully non-custodial and can never access your seed phrases or execute any transaction without your approval. It is extremely secure.</p>
                                 </div>
                             </div>
 
@@ -786,13 +786,13 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Evet! Profil alanınızdan doğrulama kodu talep edebilir, bu özel kodu kendi X hesabınızdan tweet atarak paylaşabilirsiniz. Daha sonra tweet linkinizi sisteme yapıştırdığınızda earn.cool tweeti tarayarak kod eşleşmesini kontrol eder ve hesabınızı doğrular. Bu sayede X API izin yetkisi vermeden de hesap sahipliğinizi kanıtlayabilirsiniz.</p>
+                                    <p>Yes! You can request a verification code from your profile section, share this unique code as a tweet from your X account. Then paste the tweet link into the system and earn.cool will scan the tweet to verify the code match and confirm your account ownership. This way you can prove account ownership without granting X API permissions.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Group 2: Görevi Tamamlama ve Kazançlar -->
+                    <!-- Group 2: Completing Tasks & Earnings -->
                     <div style="margin-bottom: 2.5rem;">
                         <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--primary); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                             <i data-lucide="check-square" style="width: 20px;"></i>
@@ -840,7 +840,7 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Her görevin belirli bir entrycı kapasitesi mevcuttur. Eğer doğrulama butonuna bastığınız anda görevin maksimum kontenjanı dolduysa veya reklam verenin emanet kontratındaki bütçe tükendiyse doğrulama başarısız olabilir veya bekleme havuzuna alınabilirsiniz. Bu gibi durumlarda kilitlenen komisyonlar Kasa'ya devredilir.</p>
+                                    <p>Each task has a specific entry capacity. If the task reaches maximum capacity or the advertiser's escrow budget is depleted at the moment you click verify, the verification may fail or you may be placed in a waiting pool. In such cases, locked commissions are transferred to the Vault.</p>
                                 </div>
                             </div>
 
@@ -851,13 +851,13 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Rütbeler, platformda gerçekleştirdiğiniz başarılı doğrulama sayılarına ve spam yapmama kalitenize göre hesaplanan bir güven sinyalidir. Yüksek rütbeli kullanıcılar hem daha yüksek ödüllü özel görevlere erişim sağlar hem de Vault dağıtımlarından ek çarpanlar elde ederler.</p>
+                                    <p>Ranks are trust signals calculated based on the number of successful verifications you complete on the platform and your anti-spam quality. Higher-ranked users gain access to exclusive higher-reward tasks and earn additional multipliers from Vault distributions.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Group 3: Kampanya Yönetimi -->
+                    <!-- Group 3: Campaign Management -->
                     <div style="margin-bottom: 2.5rem;">
                         <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-success); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                             <i data-lucide="settings" style="width: 20px;"></i>
@@ -871,7 +871,7 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>"Create Task" sekmesini açın, hazır şablonlardan birini seçin veya etkileşim türünü belirleyin. Hedef URL ve ödül miktarını girdikten sonra cüzdanınızla ödemeyi yapın. Göreviniz birkaç saniye içinde doğrulanarak yayına girer.</p>
+                                    <p>Open the "Create Task" tab, choose one of the ready templates or specify the interaction type. After entering the target URL and reward amount, make the payment with your wallet. Your task will be verified and go live within seconds.</p>
                                 </div>
                             </div>
                             <div class="faq-item">
@@ -880,13 +880,13 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Standart platform hizmet komisyonu %2'dir. Ancak etkileşim verecek kitle kalitesini filtrelemek isterseniz, ek maliyet yansır: Verifiedli (Verified) hesap hedeflemesi bütçeye +%20, Sorsa Score > 0 hedeflemesi ise +%15 ek komisyon ekler. Biriken bu tüm ek ücretler Vault havuzunda toplanır.</p>
+                                    <p>The standard platform service commission is 2%. However, if you want to filter the audience quality for engagement, additional costs apply: Verified account targeting adds +20% to the budget, and Sorsa Score > 0 targeting adds +15% additional commission. All these accumulated fees are collected in the Vault pool.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Group 4: AI Ajanları ve API Entegrasyonları -->
+                    <!-- Group 4: AI Agents & API Integrations -->
                     <div style="margin-bottom: 2.5rem;">
                         <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--primary); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
                             <i data-lucide="bot" style="width: 20px;"></i>
@@ -900,7 +900,7 @@
                                     <i data-lucide="chevron-down" class="faq-chevron"></i>
                                 </button>
                                 <div class="faq-answer">
-                                    <p>Evet! AI (Yapay Zeka) otonom ajanları, otonom sistemler üzerinden X402 protokolü, Machine Payment Protocol (MPP) veya Model Context Protocol (MCP) kullanarak cüzdan bakiyeleriyle earn.cool API'sine bağlanıp otomatik görevler oluşturabilir ve bunları doğrulayan gerçek insanlara (humans) ödemeler yapabilirler.</p>
+                                    <p>Yes! AI autonomous agents can connect to the earn.cool API using X402 protocol, Machine Payment Protocol (MPP), or Model Context Protocol (MCP) through autonomous systems with wallet balances to automatically create tasks and make payments to real humans who verify them.</p>
                                 </div>
                             </div>
                         </div>
@@ -944,7 +944,7 @@
                     <button class="btn btn-outline" style="width: 100%; justify-content: flex-start; padding: 0.85rem 1.25rem;" onclick="simulateWalletConnection('Phantom')">
                         <img src="https://phantom.app/img/phantom-logo.svg" class="mock-popup-logo" alt="Phantom" style="width: 24px; height: 24px; border-radius: 6px; background: white;" onerror="this.src='https://cryptologos.cc/logos/solana-sol-logo.png'">
                         <span style="font-weight: 700; margin-left: 0.75rem;">Phantom Wallet</span>
-                        <span style="margin-left: auto; font-size: 0.75rem; color: var(--text-success); font-weight: 700;">Popüler</span>
+                        <span style="margin-left: auto; font-size: 0.75rem; color: var(--text-success); font-weight: 700;">Popular</span>
                     </button>
                     
                     <button class="btn btn-outline" style="width: 100%; justify-content: flex-start; padding: 0.85rem 1.25rem; margin-top: 0.75rem;" onclick="simulateWalletConnection('Solflare')">
@@ -967,13 +967,13 @@
                     </button>
 
                     <!-- Pair devices option (Image 2) -->
-                    <button class="wallet-wurk-btn" onclick="showToast('Cihaz eşleştirme simülasyon aşamasındadır.', 'warning')">
+                    <button class="wallet-wurk-btn" onclick="showToast('Device pairing is in simulation phase.', 'warning')">
                         <div class="wallet-wurk-icon" style="color: var(--secondary); background: rgba(6, 182, 212, 0.1);">
                             <i data-lucide="smartphone"></i>
                         </div>
                         <div class="wallet-wurk-texts">
                             <span class="wallet-wurk-title">Pair devices</span>
-                            <span class="wallet-wurk-subtitle">Already a WURK account? Pair your device</span>
+                            <span class="wallet-wurk-subtitle">Already an earn.cool account? Pair your device</span>
                         </div>
                         <i data-lucide="chevron-right" style="color: var(--text-muted); width: 18px;"></i>
                     </button>
@@ -1000,7 +1000,7 @@
                     </div>
 
                     <div style="display: flex; gap: 1rem; width: 100%;">
-                        <button class="btn btn-outline" style="flex: 1;" onclick="backToWalletSelector()">Geri Dön</button>
+                        <button class="btn btn-outline" style="flex: 1;" onclick="backToWalletSelector()">Go Back</button>
                         <button class="btn btn-primary" id="btnTxStart" style="flex: 1; background: linear-gradient(135deg, var(--primary), #8b5cf6); box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);" onclick="executeTxSignIn()">
                             <i data-lucide="refresh-cw" style="width: 16px;"></i> Start
                         </button>

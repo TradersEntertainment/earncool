@@ -68,7 +68,7 @@ const mockTickNames = [
 ];
 const mockTickTasks = [
     { type: 'follow', desc: '@solana followed account', reward: '120 $EARN' },
-    { type: 'follow', desc: '@phantom cüzdan followed account', reward: '100 $EARN' },
+    { type: 'follow', desc: '@phantom wallet followed account', reward: '100 $EARN' },
     { type: 'like', desc: 'Jupiter liked announcement tweet', reward: '50 $EARN' },
     { type: 'repost', desc: 'Bonk Memecoin Launchpad reposted tweet', reward: '150 $EARN' },
     { type: 'feedback', desc: 'Raydium reviewed new interface', reward: '250 $EARN' },
@@ -436,7 +436,7 @@ function toggleSimVerified() {
     state.userProfile.verified = chk.checked;
     
     if (state.userProfile.verified) {
-        showToast('Simüle Blue Tick simulation activated! Onaylı görevleri doğrulayabilirsiniz.', 'success');
+        showToast('Blue Tick simulation activated! You can now verify verified-only tasks.', 'success');
     } else {
         showToast('Blue Tick simulation deactivated.', 'warning');
     }
@@ -448,7 +448,7 @@ function toggleSimSorsa() {
     state.userProfile.sorsaScore = chk.checked ? 10 : 0;
     
     if (state.userProfile.sorsaScore > 0) {
-        showToast('Sorsa Score set to > 0! Güvenilirlik sınırı olan görevleri doğrulayabilirsiniz.', 'success');
+        showToast('Sorsa Score set to > 0! You can now verify trust-gated tasks.', 'success');
     } else {
         showToast('Sorsa Score reset.', 'warning');
     }
@@ -465,8 +465,8 @@ function openConnectSocialModal() {
         state.social.displayName = null;
         state.social.avatar = null;
         
-        document.getElementById('socialText').innerText = 'X Hesabı Bağla';
-        showToast('X (Twitter) hesabı bağlantısı kesildi.', 'warning');
+        document.getElementById('socialText').innerText = 'Connect X Account';
+        showToast('X (Twitter) account disconnected.', 'warning');
         
         if (typeof renderTaskList === 'function') renderTaskList();
         return;
@@ -512,8 +512,8 @@ function simulateSocialAuth() {
 // -------------------------------------------------------------
 function renderStats() {
     document.getElementById('statTotalPaid').innerText = `${state.stats.totalPaid.toLocaleString()} $EARN`;
-    document.getElementById('statCompleted').innerText = `${state.stats.completedTasks.toLocaleString()} Görev`;
-    document.getElementById('statActiveUsers').innerText = `${state.stats.activeUsers.toLocaleString()} Kullanıcı`;
+    document.getElementById('statCompleted').innerText = `${state.stats.completedTasks.toLocaleString()} Tasks`;
+    document.getElementById('statActiveUsers').innerText = `${state.stats.activeUsers.toLocaleString()} Users`;
     document.getElementById('statTokenPrice').innerText = `${state.stats.tokenPriceSOL.toFixed(6)} SOL`;
     document.getElementById('statPriceChange').innerText = `▲ %${state.stats.priceChange24h.toFixed(2)}`;
 }
@@ -613,7 +613,7 @@ function addTickerEvent(isInitial = false) {
         </div>
         <div style="display: flex; align-items: center; gap: 0.75rem;">
             <span style="font-weight: 700; color: ${badgeColor};">${randomTask.reward}</span>
-            <span style="font-size: 0.75rem; color: var(--text-muted); opacity: 0.7;">şimdi</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); opacity: 0.7;">just now</span>
         </div>
     `;
     
@@ -717,7 +717,7 @@ function startVaultCountdown() {
     const min = targetDate.getMinutes() < 10 ? '0' + targetDate.getMinutes() : targetDate.getMinutes();
     const sec = targetDate.getSeconds() < 10 ? '0' + targetDate.getSeconds() : targetDate.getSeconds();
     
-    if (dateEl) dateEl.innerText = `${day}.${month}.${yr} ${hr}:${min}:${sec} tarihinde`;
+    if (dateEl) dateEl.innerText = `${month}/${day}/${yr} ${hr}:${min}:${sec}`;
     
     if (countdownInterval) clearInterval(countdownInterval);
     
@@ -805,7 +805,7 @@ function drawVaultReturnTrendChart() {
     tEnd.setAttribute('fill', 'var(--text-muted)');
     tEnd.setAttribute('font-size', '0.65rem');
     tEnd.setAttribute('font-weight', '600');
-    tEnd.textContent = '1 Haz';
+    tEnd.textContent = '1 Jun';
     svg.appendChild(tEnd);
 }
 
@@ -842,11 +842,11 @@ function renderVaultPreviews() {
 }
 
 const dbVaultContributions = [
-    { time: '1dk önce', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-    { time: '2dk önce', amount: '1.00 $EARN', job: '#c123df10', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-    { time: '3dk önce', amount: '3.00 $EARN', job: '#e23d9b01', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-    { time: '4dk önce', amount: '4.00 $EARN', job: '#b4819d20', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-    { time: '5dk önce', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Çalışan görevi tamamladı (Komisyon)' }
+    { time: '1m ago', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Worker completed task (Commission)' },
+    { time: '2m ago', amount: '1.00 $EARN', job: '#c123df10', reason: 'Worker completed task (Commission)' },
+    { time: '3m ago', amount: '3.00 $EARN', job: '#e23d9b01', reason: 'Worker completed task (Commission)' },
+    { time: '4m ago', amount: '4.00 $EARN', job: '#b4819d20', reason: 'Worker completed task (Commission)' },
+    { time: '5m ago', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Worker completed task (Commission)' }
 ];
 
 function renderVaultContributions() {
@@ -912,8 +912,8 @@ function handleVaultCheck() {
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Pay Oranı:</div>
-                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">%0.0482 (Tahmini)</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Share Rate:</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: var(--primary);">0.0482% (Estimated)</div>
                 </div>
             </div>
         `;
@@ -925,16 +925,16 @@ function handleVaultCheck() {
                     <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); display: flex; align-items: center; justify-content: center; color: var(--text-error); font-weight: 700;">✖</div>
                     <div>
                         <div style="font-weight: 700; color: var(--text-error);">Wallet is not eligible (Ineligible)</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Does not meet the minimum $EARN holding limit (100,000 $EARN) karşılamıyorsunuz.</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Does not meet the minimum $EARN holding requirement (100,000 $EARN).</div>
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 0.8rem; color: var(--text-muted);">Pay Oranı:</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Share Rate:</div>
                     <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-error);">%0.0000</div>
                 </div>
             </div>
         `;
-        showToast('Wallet check completed. Cüzdanınız kasa kriterlerine uymamaktadır.', 'error');
+        showToast('Wallet check completed. Your wallet does not meet Vault eligibility criteria.', 'error');
     }
 }
 
@@ -984,7 +984,7 @@ function applyQuickJobPreset(preset) {
             
         case 'follow_ver':
             taskType.value = 'follow';
-            taskTitle.value = 'Verified (Mavi Tikli) X Takipçi Kampanyası';
+            taskTitle.value = 'Verified (Blue Tick) X Followers Campaign';
             taskLink.value = 'https://x.com/earndotcool';
             rewardPerUser.value = '120';
             maxParticipants.value = '200';
@@ -993,7 +993,7 @@ function applyQuickJobPreset(preset) {
             
         case 'raid_ver':
             taskType.value = 'repost';
-            taskTitle.value = 'Verified (Mavi Tikli) X Raid Görevi (Repost & Beğeni)';
+            taskTitle.value = 'Verified (Blue Tick) X Raid Task (Repost & Like)';
             taskLink.value = 'https://x.com/earndotcool/status/179920199';
             rewardPerUser.value = '150';
             maxParticipants.value = '150';
@@ -1002,7 +1002,7 @@ function applyQuickJobPreset(preset) {
             
         case 'raid_std':
             taskType.value = 'repost';
-            taskTitle.value = 'Standart X Raid Görevi (Hızlı Etkileşim)';
+            taskTitle.value = 'Standard X Raid Task (Quick Engagement)';
             taskLink.value = 'https://x.com/earndotcool/status/179920199';
             rewardPerUser.value = '80';
             maxParticipants.value = '300';
@@ -1020,7 +1020,7 @@ function applyQuickJobPreset(preset) {
             
         case 'repost':
             taskType.value = 'repost';
-            taskTitle.value = 'Tweet Yeniden Paylaşım (Repost) Görevi';
+            taskTitle.value = 'Tweet Repost Task';
             taskLink.value = 'https://x.com/earndotcool/status/179920192';
             rewardPerUser.value = '60';
             maxParticipants.value = '400';
@@ -1029,7 +1029,7 @@ function applyQuickJobPreset(preset) {
             
         case 'likes':
             taskType.value = 'like';
-            taskTitle.value = 'Tweet Beğeni (Like) Görevi';
+            taskTitle.value = 'Tweet Like Task';
             taskLink.value = 'https://x.com/earndotcool/status/179920192';
             rewardPerUser.value = '40';
             maxParticipants.value = '500';
@@ -1038,7 +1038,7 @@ function applyQuickJobPreset(preset) {
             
         case 'bookmarks':
             taskType.value = 'like';
-            taskTitle.value = 'Tweet Yer İmi (Bookmark) Görevi';
+            taskTitle.value = 'Tweet Bookmark Task';
             taskLink.value = 'https://x.com/earndotcool/status/179920192';
             rewardPerUser.value = '50';
             maxParticipants.value = '300';
@@ -1047,7 +1047,7 @@ function applyQuickJobPreset(preset) {
             
         case 'comments':
             taskType.value = 'feedback';
-            taskTitle.value = 'X Tweet Yorumlama (Comment) Görevi';
+            taskTitle.value = 'X Tweet Comment Task';
             taskLink.value = 'https://x.com/earndotcool/status/179920192';
             rewardPerUser.value = '90';
             maxParticipants.value = '200';

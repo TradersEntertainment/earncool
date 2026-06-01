@@ -24,8 +24,8 @@ const initialDbState = {
     {
       id: 'task-1',
       type: 'follow',
-      title: 'earn.cool Resmi X Hesabını Takip Et',
-      link: 'https://x.com/wurkdotfun', // can be earn.cool in description
+      title: 'Follow earn.cool Official X Account',
+      link: 'https://x.com/earndotcool', // can be earn.cool in description
       reward: 100,
       creator: 'earn.cool Admin',
       capacity: 1000,
@@ -37,7 +37,7 @@ const initialDbState = {
     {
       id: 'task-2',
       type: 'follow',
-      title: 'Mavi Tikli X Takipçi Kampanyası (earn.cool Devs)',
+      title: 'Verified X Followers Campaign (earn.cool Devs)',
       link: 'https://x.com/earndotcool',
       reward: 120,
       creator: 'earn.cool Devs',
@@ -50,8 +50,8 @@ const initialDbState = {
     {
       id: 'task-3',
       type: 'repost',
-      title: 'Sorsa Skoru > 0 Güvenilir Hesap Raidi (Bonk Team)',
-      link: 'https://x.com/clickdotfun/status/179920199',
+      title: 'Sorsa Score > 0 Trusted Account Raid (Bonk Team)',
+      link: 'https://x.com/earndotcool/status/179920199',
       reward: 115,
       creator: 'Bonk Official',
       capacity: 250,
@@ -63,7 +63,7 @@ const initialDbState = {
     {
       id: 'task-4',
       type: 'feedback',
-      title: 'earn.cool Arayüzü Hakkında Web Sitemizde Geri Bildirim Bırak',
+      title: 'Leave Feedback About earn.cool Interface on Our Website',
       link: 'https://earn.cool/feedback',
       reward: 200,
       creator: 'Product Manager',
@@ -76,7 +76,7 @@ const initialDbState = {
     {
       id: 'task-5',
       type: 'follow',
-      title: '@solana Resmi Geliştirici Hesabını Takip Et',
+      title: 'Follow @solana Official Developer Account',
       link: 'https://x.com/solana',
       reward: 100,
       creator: 'Solana Foundation',
@@ -89,7 +89,7 @@ const initialDbState = {
     {
       id: 'task-6',
       type: 'like',
-      title: 'Phantom Wallet Çoklu Zincir Güncellemesini Beğen',
+      title: 'Like Phantom Wallet Multi-Chain Update',
       link: 'https://x.com/phantom/status/18892012',
       reward: 60,
       creator: 'Phantom Wallet',
@@ -104,11 +104,11 @@ const initialDbState = {
   vault: {
     balance: 4467250.00,
     contributions: [
-      { time: '1dk önce', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-      { time: '2dk önce', amount: '1.00 $EARN', job: '#c123df10', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-      { time: '3dk önce', amount: '3.00 $EARN', job: '#e23d9b01', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-      { time: '4dk önce', amount: '4.00 $EARN', job: '#b4819d20', reason: 'Çalışan görevi tamamladı (Komisyon)' },
-      { time: '5dk önce', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Çalışan görevi tamamladı (Komisyon)' }
+      { time: '1m ago', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Worker completed task (Commission)' },
+      { time: '2m ago', amount: '1.00 $EARN', job: '#c123df10', reason: 'Worker completed task (Commission)' },
+      { time: '3m ago', amount: '3.00 $EARN', job: '#e23d9b01', reason: 'Worker completed task (Commission)' },
+      { time: '4m ago', amount: '4.00 $EARN', job: '#b4819d20', reason: 'Worker completed task (Commission)' },
+      { time: '5m ago', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Worker completed task (Commission)' }
     ]
   }
 };
@@ -146,7 +146,7 @@ app.post('/api/auth', (req, res) => {
   const { address, message, signature } = req.body;
   
   if (!address || !message || !signature) {
-    return res.status(400).json({ success: false, error: 'Eksik kimlik bilgileri: address, message ve signature gereklidir.' });
+    return res.status(400).json({ success: false, error: 'Missing credentials: address, message and signature are required.' });
   }
   
   try {
@@ -159,7 +159,7 @@ app.post('/api/auth', (req, res) => {
     const isSignatureValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
     
     if (!isSignatureValid) {
-      return res.status(401).json({ success: false, error: 'Kriptografik İmza Geçersiz! Lütfen cüzdanınızla tekrar imzalayın.' });
+      return res.status(401).json({ success: false, error: 'Cryptographic signature invalid! Please sign again with your wallet.' });
     }
     
     // Signature verified! Load user profile from DB or initialize
@@ -177,13 +177,13 @@ app.post('/api/auth', (req, res) => {
     
     res.json({
       success: true,
-      message: 'Cüzdan başarıyla kriptografik olarak doğrulandı!',
+      message: 'Wallet successfully authenticated cryptographically!',
       user: db.users[address]
     });
     
   } catch (error) {
     console.error("Auth verification error:", error);
-    res.status(500).json({ success: false, error: 'Oturum açma doğrulaması sırasında sunucu hatası oluştu.' });
+    res.status(500).json({ success: false, error: 'Server error during authentication verification.' });
   }
 });
 
@@ -198,14 +198,14 @@ app.post('/api/tasks', (req, res) => {
   const { task, creatorAddress } = req.body;
   
   if (!task || !creatorAddress) {
-    return res.status(400).json({ success: false, error: 'Eksik veri: task ve creatorAddress gereklidir.' });
+    return res.status(400).json({ success: false, error: 'Missing data: task and creatorAddress are required.' });
   }
   
   const db = loadDb();
   const user = db.users[creatorAddress];
   
   if (!user) {
-    return res.status(404).json({ success: false, error: 'Kullanıcı profili bulunamadı. Lütfen önce cüzdanınızı doğrulayın.' });
+    return res.status(404).json({ success: false, error: 'User profile not found. Please verify your wallet first.' });
   }
   
   const baseReward = task.reward * task.capacity;
@@ -218,7 +218,7 @@ app.post('/api/tasks', (req, res) => {
   const totalCost = baseReward + fee + qualityFee;
   
   if (user.balanceEARN < totalCost) {
-    return res.status(400).json({ success: false, error: `Yetersiz bakiye! Gerekli: ${totalCost} $EARN, Mevcut: ${user.balanceEARN} $EARN` });
+    return res.status(400).json({ success: false, error: `Insufficient balance! Required: ${totalCost} $EARN, Available: ${user.balanceEARN} $EARN` });
   }
   
   // Deduct cost and save
@@ -251,7 +251,7 @@ app.post('/api/tasks/:id/verify', (req, res) => {
   const { walletAddress, verifiedSim, sorsaScoreSim, proofMethod, tweetUrl } = req.body;
   
   if (!walletAddress) {
-    return res.status(400).json({ success: false, error: 'Eksik veri: walletAddress gereklidir.' });
+    return res.status(400).json({ success: false, error: 'Missing data: walletAddress is required.' });
   }
   
   const db = loadDb();
@@ -259,18 +259,18 @@ app.post('/api/tasks/:id/verify', (req, res) => {
   const user = db.users[walletAddress];
   
   if (!task) {
-    return res.status(404).json({ success: false, error: 'Görev bulunamadı.' });
+    return res.status(404).json({ success: false, error: 'Task not found.' });
   }
   if (!user) {
-    return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı.' });
+    return res.status(404).json({ success: false, error: 'User not found.' });
   }
   
   if (task.completedBy.includes(walletAddress)) {
-    return res.status(400).json({ success: false, error: 'Bu görevi zaten tamamladınız.' });
+    return res.status(400).json({ success: false, error: 'You have already completed this task.' });
   }
   
   if (task.completedCount >= task.capacity) {
-    return res.status(400).json({ success: false, error: 'Bu görevin kontenjanı dolmuştur.' });
+    return res.status(400).json({ success: false, error: 'This task has reached capacity.' });
   }
   
   // Save simulated verification toggles to database
@@ -279,12 +279,12 @@ app.post('/api/tasks/:id/verify', (req, res) => {
   
   // 1. Check verified condition
   if (task.verifiedOnly && !user.verified) {
-    return res.status(400).json({ success: false, error: 'Hedef Kitle Filtresi Uyuşmazlığı: Mavi tikli olmanız gerekmektedir.' });
+    return res.status(400).json({ success: false, error: 'Audience Filter Mismatch: You must be X Verified (Blue Tick).' });
   }
   
   // 2. Check sorsa condition
   if (task.minSorsa > 0 && user.sorsaScore <= 0) {
-    return res.status(400).json({ success: false, error: 'Hedef Kitle Filtresi Uyuşmazlığı: Sorsa skorunuz 0\'dan büyük olmalıdır.' });
+    return res.status(400).json({ success: false, error: 'Audience Filter Mismatch: Your Sorsa score must be greater than 0.' });
   }
   
   // Everything checks out! Process reward
@@ -297,10 +297,10 @@ app.post('/api/tasks/:id/verify', (req, res) => {
   const comm = (task.reward * 0.02).toFixed(2);
   db.vault.balance += parseFloat(comm);
   db.vault.contributions.unshift({
-    time: 'şimdi',
+    time: 'just now',
     amount: `${comm} $EARN`,
     job: `#${task.id.slice(0, 8)}`,
-    reason: 'Çalışan görevi tamamladı (Komisyon)'
+    reason: 'Worker completed task (Commission)'
   });
   
   if (db.vault.contributions.length > 50) db.vault.contributions.pop();
@@ -319,13 +319,13 @@ app.post('/api/tasks/:id/verify', (req, res) => {
 app.post('/api/user/profile', (req, res) => {
   const { walletAddress, verified, sorsaScore } = req.body;
   if (!walletAddress) {
-    return res.status(400).json({ success: false, error: 'Eksik veri: walletAddress gereklidir.' });
+    return res.status(400).json({ success: false, error: 'Missing data: walletAddress is required.' });
   }
   
   const db = loadDb();
   const user = db.users[walletAddress];
   if (!user) {
-    return res.status(404).json({ success: false, error: 'Kullanıcı bulunamadı.' });
+    return res.status(404).json({ success: false, error: 'User not found.' });
   }
   
   user.verified = verified;
