@@ -1075,3 +1075,89 @@ function selectQualityFilter(type) {
     
     calculateCampaignCost();
 }
+
+// -------------------------------------------------------------
+// CYBER WATCHER MASCOT (FOLLOWING EYES) LOGIC
+// -------------------------------------------------------------
+function initCyberWatcher() {
+    const watcher = document.getElementById('cyberWatcher');
+    const leftPupil = document.getElementById('pupil-left');
+    const rightPupil = document.getElementById('pupil-right');
+    const tooltip = document.getElementById('watcherTooltip');
+
+    if (!watcher || !leftPupil || !rightPupil) return;
+
+    // Interactive easter egg messages when clicking the watcher
+    const funQuotes = [
+        "🤖 Audit system: 100% ONLINE",
+        "🎯 Focus on high-yield tasks!",
+        "👀 Watching you stack those SOL bags...",
+        "💎 $EARN is the future, anon.",
+        "⚡ Solana speed feels so good!",
+        "📈 Bonding curve looks bullish today",
+        "🔒 Vault yields are secure!",
+        "🤑 Did someone say free airdrops?",
+        "👾 Beep boop... click to verify!"
+    ];
+
+    watcher.addEventListener('click', () => {
+        const randomQuote = funQuotes[Math.floor(Math.random() * funQuotes.length)];
+        if (tooltip) {
+            tooltip.innerText = randomQuote;
+            // Force show tooltip temporarily
+            tooltip.style.opacity = '1';
+            tooltip.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                tooltip.style.opacity = '';
+                tooltip.style.transform = '';
+            }, 3000);
+        }
+        
+        // Add a cute spin animation
+        watcher.style.transform = 'scale(1.2) rotate(360deg)';
+        setTimeout(() => {
+            watcher.style.transform = '';
+        }, 600);
+    });
+
+    // Tracking mouse movements
+    document.addEventListener('mousemove', (e) => {
+        const leftEye = leftPupil.parentElement;
+        const rightEye = rightPupil.parentElement;
+
+        if (!leftEye || !rightEye) return;
+
+        // Calculate positions for left pupil
+        updatePupil(e, leftEye, leftPupil);
+        // Calculate positions for right pupil
+        updatePupil(e, rightEye, rightPupil);
+    });
+
+    function updatePupil(e, eye, pupil) {
+        const rect = eye.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+
+        const dx = e.clientX - eyeCenterX;
+        const dy = e.clientY - eyeCenterY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Max translation distance inside the eye white (usually ~4-5px)
+        const maxLimit = 5; 
+        
+        // Gradual vector calculation
+        const angle = Math.atan2(dy, dx);
+        const px = Math.min(maxLimit, dist * 0.05) * Math.cos(angle);
+        const py = Math.min(maxLimit, dist * 0.05) * Math.sin(angle);
+
+        pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+    }
+}
+
+// Self-initialize once DOM is fully loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCyberWatcher);
+} else {
+    initCyberWatcher();
+}
+
