@@ -1,0 +1,17 @@
+{
+  "name": "click-fun",
+  "version": "1.0.0",
+  "description": "Premium Web3 microtask platform clone of wurk.fun on Solana",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y http-server ./ -p 3005 -o"
+  },
+  "keywords": [
+    "solana",
+    "web3",
+    "microtask",
+    "pumpfun"
+  ],
+  "author": "click.fun Team",
+  "license": "MIT"
+}
