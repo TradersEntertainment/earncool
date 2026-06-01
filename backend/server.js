@@ -15,8 +15,8 @@ app.use(express.json());
 // Serve static frontend files on the root url
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// JSON File Database Setup
-const DB_PATH = path.join(__dirname, 'database.json');
+// JSON File Database Setup (Uses mounted Railway Volume "/data" in production for persistence)
+const DB_PATH = process.env.NODE_ENV === 'production' ? '/data/database.json' : path.join(__dirname, 'database.json');
 
 // Initial seed database state
 const initialDbState = {
