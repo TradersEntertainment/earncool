@@ -1,3 +1,8 @@
+// Global API Base URL definition (Autodetects environment for seamless dev/prod integration)
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://earncool.up.railway.app';
+
 // Global App State
 const state = {
     wallet: {
@@ -229,7 +234,7 @@ async function simulateWalletConnection(providerName) {
             document.getElementById('walletLoadingTitle').innerText = 'Verifying Authenticity...';
             document.getElementById('walletLoadingDesc').innerText = 'Validating cryptographic signature against Solana ledger standards on backend...';
             
-            const authResponse = await fetch('/api/auth', {
+            const authResponse = await fetch(`${API_BASE}/api/auth`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address: publicKey, message, signature })
@@ -297,7 +302,7 @@ async function simulateWalletConnection(providerName) {
             state.wallet.address = `om8R${randomHex.toUpperCase()}4s9`;
             
             // Post to backend auth (using mock data) to register address in server database
-            fetch('/api/auth', {
+            fetch(`${API_BASE}/api/auth`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -383,7 +388,7 @@ function executeTxSignIn() {
         state.wallet.provider = 'Transaction Auth';
         state.wallet.address = addressInput;
         
-        fetch('/api/auth', {
+        fetch(`${API_BASE}/api/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -864,7 +869,7 @@ function renderVaultContributions() {
 
 async function fetchVaultStatus() {
     try {
-        const res = await fetch('/api/vault');
+        const res = await fetch(`${API_BASE}/api/vault`);
         const data = await res.json();
         if (data.success) {
             // Update balance UI

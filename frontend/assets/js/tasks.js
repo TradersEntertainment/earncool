@@ -80,9 +80,14 @@ const dbTasks = [
     }
 ];
 
+// Global API Base URL (Synchronized with app.js configuration)
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://earncool.up.railway.app';
+
 async function fetchTasks() {
     try {
-        const res = await fetch('/api/tasks');
+        const res = await fetch(`${API_BASE}/api/tasks`);
         const data = await res.json();
         if (data.success) {
             dbTasks.length = 0;
@@ -688,7 +693,7 @@ async function verifyTaskCompletion() {
             tweetUrl: selectedProofMethod === 'manual' ? document.getElementById('manualProofTweetUrl').value.trim() : ''
         };
         
-        const response = await fetch(`/api/tasks/${task.id}/verify`, {
+        const response = await fetch(`${API_BASE}/api/tasks/${task.id}/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -910,7 +915,7 @@ async function handleCreateCampaign(event) {
             }
         };
         
-        const response = await fetch('/api/tasks', {
+        const response = await fetch(`${API_BASE}/api/tasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
