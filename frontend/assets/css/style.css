@@ -1928,8 +1928,8 @@ main {
 }
 
 .cyber-watcher-container.intro-center {
-    bottom: calc(50vh - 38px);
-    right: calc(50vw - 38px);
+    bottom: calc(50vh - 40px); /* Aligns vertically with the center of the hero text */
+    right: calc(50vw + 260px); /* Pushed left into the open circle area next to the title */
     transform: scale(1.6);
     box-shadow: 0 0 50px rgba(168, 85, 247, 0.4);
 }
