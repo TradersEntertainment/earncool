@@ -1077,59 +1077,75 @@ function selectQualityFilter(type) {
 }
 
 // -------------------------------------------------------------
-// CYBER WATCHER MASCOT (FOLLOWING EYES) LOGIC
+// CYBER WATCHER MASCOT (FOLLOWING EYES & AI CHAT) LOGIC
 // -------------------------------------------------------------
 function initCyberWatcher() {
     const watcher = document.getElementById('cyberWatcher');
     const leftPupil = document.getElementById('pupil-left');
     const rightPupil = document.getElementById('pupil-right');
     const tooltip = document.getElementById('watcherTooltip');
+    const watcherInner = document.getElementById('cyberWatcherInner');
+    const chatWindow = document.getElementById('watcherChatWindow');
 
-    if (!watcher || !leftPupil || !rightPupil) return;
+    if (!watcher || !leftPupil || !rightPupil || !watcherInner || !chatWindow) return;
 
-    // Interactive easter egg messages when clicking the watcher
-    const funQuotes = [
-        "🤖 Audit system: 100% ONLINE",
-        "🎯 Focus on high-yield tasks!",
-        "👀 Watching you stack those SOL bags...",
-        "💎 $EARN is the future, anon.",
-        "⚡ Solana speed feels so good!",
-        "📈 Bonding curve looks bullish today",
-        "🔒 Vault yields are secure!",
-        "🤑 Did someone say free airdrops?",
-        "👾 Beep boop... click to verify!"
-    ];
-
-    watcher.addEventListener('click', () => {
-        const randomQuote = funQuotes[Math.floor(Math.random() * funQuotes.length)];
-        if (tooltip) {
-            tooltip.innerText = randomQuote;
-            // Force show tooltip temporarily
-            tooltip.style.opacity = '1';
-            tooltip.style.transform = 'translateY(0)';
-            setTimeout(() => {
-                tooltip.style.opacity = '';
-                tooltip.style.transform = '';
-            }, 3000);
+    // 1. Intro Center Animation Flow: Smoothly slide to bottom right after a delay or on scroll
+    const exitIntroCenter = () => {
+        if (watcher.classList.contains('intro-center')) {
+            watcher.classList.remove('intro-center');
+            if (tooltip) tooltip.innerText = "🤖 Cyber Watcher: ONLINE. Click me!";
         }
+    };
+
+    setTimeout(exitIntroCenter, 3800); // 3.8s center stage presentation
+    window.addEventListener('scroll', exitIntroCenter, { once: true });
+
+    // 2. Click Mascot to Toggle Chat Window
+    watcherInner.addEventListener('click', (e) => {
+        e.stopPropagation();
         
-        // Add a cute spin animation
-        watcher.style.transform = 'scale(1.2) rotate(360deg)';
+        // If it's still in the center intro stage, send it down immediately
+        if (watcher.classList.contains('intro-center')) {
+            exitIntroCenter();
+            return;
+        }
+
+        // Toggle chat active state
+        chatWindow.classList.toggle('active');
+        
+        // Hide standard tooltip when chat is active
+        if (chatWindow.classList.contains('active')) {
+            tooltip.style.opacity = '0';
+            tooltip.style.pointerEvents = 'none';
+        } else {
+            tooltip.style.opacity = '';
+            tooltip.style.pointerEvents = '';
+        }
+
+        // Mascot interactive feedback animation
+        watcherInner.style.transform = 'scale(1.2) rotate(360deg)';
         setTimeout(() => {
-            watcher.style.transform = '';
+            watcherInner.style.transform = '';
         }, 600);
     });
 
-    // Tracking mouse movements
+    // Close chat if clicked anywhere outside the widget
+    document.addEventListener('click', (e) => {
+        if (!watcher.contains(e.target)) {
+            chatWindow.classList.remove('active');
+            tooltip.style.opacity = '';
+            tooltip.style.pointerEvents = '';
+        }
+    });
+
+    // 3. Track Mouse movements to calculate pupil offsets (Dynamic Eye Vectoring)
     document.addEventListener('mousemove', (e) => {
         const leftEye = leftPupil.parentElement;
         const rightEye = rightPupil.parentElement;
 
         if (!leftEye || !rightEye) return;
 
-        // Calculate positions for left pupil
         updatePupil(e, leftEye, leftPupil);
-        // Calculate positions for right pupil
         updatePupil(e, rightEye, rightPupil);
     });
 
@@ -1145,13 +1161,81 @@ function initCyberWatcher() {
         // Max translation distance inside the eye white (usually ~4-5px)
         const maxLimit = 5; 
         
-        // Gradual vector calculation
         const angle = Math.atan2(dy, dx);
         const px = Math.min(maxLimit, dist * 0.05) * Math.cos(angle);
         const py = Math.min(maxLimit, dist * 0.05) * Math.sin(angle);
 
         pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
     }
+}
+
+// 4. Chat Sending & Rendering Engine with Groq AI integration
+window.sendChatMessage = async function() {
+    const input = document.getElementById('chatInput');
+    const body = document.getElementById('chatBody');
+    if (!input || !body) return;
+    
+    const text = input.value.trim();
+    if (!text) return;
+    
+    // Render user message locally
+    appendChatMessage('user', text);
+    input.value = '';
+    
+    // Show typing status indicator
+    const typingId = 'typing-' + Date.now();
+    const typingDiv = document.createElement('div');
+    typingDiv.id = typingId;
+    typingDiv.className = 'chat-typing-indicator';
+    typingDiv.innerHTML = `<span>🤖 Cyber Watcher is compiling response...</span>`;
+    body.appendChild(typingDiv);
+    body.scrollTop = body.scrollHeight;
+    
+    try {
+        // Send request to Express back-end
+        const response = await fetch(`${API_BASE}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        const indicator = document.getElementById(typingId);
+        if (indicator) indicator.remove();
+        
+        if (data.success && data.reply) {
+            appendChatMessage('bot', data.reply);
+        } else {
+            appendChatMessage('bot', "🤖 Beep... boop... connection block in the siber-matrix. Please try again!");
+        }
+    } catch (e) {
+        console.error(e);
+        const indicator = document.getElementById(typingId);
+        if (indicator) indicator.remove();
+        appendChatMessage('bot', "🤖 Connection failed. Make sure the backend service is reachable!");
+    }
+}
+
+function appendChatMessage(sender, text) {
+    const body = document.getElementById('chatBody');
+    if (!body) return;
+    
+    const div = document.createElement('div');
+    div.className = `chat-message ${sender}`;
+    
+    // Basic Markdown Parser (converts **text** to bold and \n to line breaks)
+    let parsedHtml = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+        
+    div.innerHTML = parsedHtml;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight; // Auto-scroll
 }
 
 // Self-initialize once DOM is fully loaded

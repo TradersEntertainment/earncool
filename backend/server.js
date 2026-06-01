@@ -341,6 +341,78 @@ app.get('/api/vault', (req, res) => {
   res.json({ success: true, vault: db.vault });
 });
 
+// 7. GROQ AI CHAT COMPLETIONS ENDPOINT
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body;
+  
+  if (!message) {
+    return res.status(400).json({ success: false, error: 'Missing field: message is required.' });
+  }
+
+  const groqApiKey = process.env.GROQ_API_KEY;
+
+  if (!groqApiKey) {
+    // Elegant fallback if Groq API key is not entered in environment variables yet
+    return res.json({
+      success: true,
+      reply: "👾 **[SYSTEM DEMO MODE]**\n\nBeep boop! I am your **Cyber Watcher** assistant! To unlock my full Llama-3 AI capabilities, please add the `GROQ_API_KEY` environment variable in your Railway dashboard.\n\nBut for now, I can tell you that **earn.cool** is a premium Solana Web3 micro-task platform! Here, you can connect your Solana wallet and X (Twitter) account to start earning **$EARN** tokens instantly by completing follows, likes, and repost tasks! You can also trade $EARN on our live bonding curve or lock your tokens in the Vault to earn passive SOL rewards!"
+    });
+  }
+
+  try {
+    const systemPrompt = `You are "Cyber Watcher", the elite artificial intelligence mascot and guide for the earn.cool platform. 
+Your personality is futuristic, energetic, sleek, Web3-native, and slightly cybernetic (use cool emojis like 🤖, ⚡, 💎, 📈, 👾, 🔒).
+Always respond in the SAME language the user addresses you in (if they ask in Turkish, answer in Turkish; if English, answer in English).
+
+Here is everything you know about earn.cool:
+1. Core Concept: earn.cool is a Web3 social-media micro-task network built on the Solana blockchain.
+2. Two Main User Roles:
+   - Workers: Complete social tasks (follows, likes, reposts on X/Twitter) to instantly earn $EARN tokens and SOL. They connect their Solana wallets (Phantom, Solflare, etc.) and X accounts to verify actions automatically.
+   - Creators / Advertisers: Create campaigns/tasks to boost their social reach. They fund these tasks by locking $EARN tokens. They can filter participants by requirements like "Verified Accounts Only" or "Sorsa Score > 0" to filter bots.
+3. Interactive Features of the Platform:
+   - Task Market: A live portal of X/Twitter tasks with real-time verification and instant token rewards.
+   - $EARN Trade (Bonding Curve): A pump.fun-like bonding curve terminal where users can buy and sell $EARN using SOL. When progress hits 100% (target: 85,000 SOL), the liquidity automatically migrates to Raydium DEX.
+   - EARN Vault: Staking portal where users lock their $EARN tokens to earn high-yield passive rewards paid in SOL (derived from platform commission distributions).
+   - Leaderboard: Shows the top earners (Workers) and top campaigns (Creators).
+4. Goal: Be extremely helpful, guide users on how to use the wallet, create tasks, stake, or trade, and keep them hyped about $EARN! Keep answers concise, highly structured, and engaging. Avoid long paragraphs, use bullet points where helpful.`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${groqApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant', // Highly fast and cost-effective llama 3.1 model on Groq
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 800
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      res.json({
+        success: true,
+        reply: data.choices[0].message.content
+      });
+    } else {
+      console.error('Groq API Error:', data);
+      res.json({
+        success: true,
+        reply: "🤖 Beep... boop... I encountered a connection glitch in the siber-matrix. Please try again!"
+      });
+    }
+  } catch (error) {
+    console.error('Groq Chat Server Error:', error);
+    res.status(500).json({ success: false, error: 'Internal server error while calling AI service.' });
+  }
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`\n======================================================`);

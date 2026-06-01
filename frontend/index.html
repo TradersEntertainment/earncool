@@ -1078,9 +1078,34 @@
         </div>
     </div>
 
-    <!-- Floating Cyber-Watcher Mascot (Following Eyes) -->
-    <div id="cyberWatcher" class="cyber-watcher-container">
-        <div class="cyber-watcher-inner">
+    <!-- Floating Cyber-Watcher Mascot (Following Eyes & AI Chat) -->
+    <div id="cyberWatcher" class="cyber-watcher-container intro-center">
+        <!-- Floating Chat Window -->
+        <div id="watcherChatWindow" class="watcher-chat-window">
+            <div class="chat-header">
+                <div class="chat-header-title">
+                    <i data-lucide="bot" style="width: 18px; color: var(--primary);"></i>
+                    <span>Cyber Watcher AI</span>
+                </div>
+                <div class="chat-header-status">
+                    <span class="chat-header-dot"></span>
+                    <span>ONLINE</span>
+                </div>
+            </div>
+            <div class="chat-body" id="chatBody">
+                <div class="chat-message bot">
+                    Hello! 👾 I am your futuristic **Cyber Watcher** assistant. Ask me anything about $EARN, tasks, bonding curve trading, or vault locking! How can I help you stack SOL today? 🚀
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about earn.cool..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                <button class="chat-send-btn" onclick="sendChatMessage()">
+                    <i data-lucide="send" style="width: 16px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="cyber-watcher-inner" id="cyberWatcherInner">
             <div class="watcher-eyes">
                 <div class="eye left-eye">
                     <div class="pupil" id="pupil-left"></div>
@@ -1089,7 +1114,7 @@
                     <div class="pupil" id="pupil-right"></div>
                 </div>
             </div>
-            <div class="watcher-tooltip" id="watcherTooltip">🤖 Scanning for alpha...</div>
+            <div class="watcher-tooltip" id="watcherTooltip">🤖 Cyber Watcher: ONLINE. Click me!</div>
         </div>
     </div>
 
