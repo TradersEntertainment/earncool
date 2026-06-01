@@ -1238,10 +1238,29 @@ function appendChatMessage(sender, text) {
     body.scrollTop = body.scrollHeight; // Auto-scroll
 }
 
+// -------------------------------------------------------------
+// DYNAMIC TAB TITLE / ATTENTION GRABBER
+// -------------------------------------------------------------
+function initDynamicTabTitle() {
+    const originalTitle = document.title;
+    
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            document.title = "👋 Come back & earn $EARN! ⚡";
+        } else {
+            document.title = originalTitle;
+        }
+    });
+}
+
 // Self-initialize once DOM is fully loaded
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCyberWatcher);
+    document.addEventListener('DOMContentLoaded', () => {
+        initCyberWatcher();
+        initDynamicTabTitle();
+    });
 } else {
     initCyberWatcher();
+    initDynamicTabTitle();
 }
 
