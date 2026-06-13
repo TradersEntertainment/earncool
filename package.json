@@ -1,6 +1,9 @@
 {
   "name": "click-fun",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "description": "Premium Web3 microtask platform clone of wurk.fun on Solana",
   "main": "index.html",
   "scripts": {
