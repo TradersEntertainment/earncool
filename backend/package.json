@@ -2,7 +2,7 @@
   "name": "earn-cool-backend",
   "version": "1.0.0",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22.x"
   },
   "description": "Production-grade backend for earn.cool Web3 microtask platform",
   "main": "server.js",
