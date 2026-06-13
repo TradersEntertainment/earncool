@@ -63,13 +63,28 @@ function loadDb() {
   try {
     if (!fs.existsSync(DB_PATH)) {
       fs.writeFileSync(DB_PATH, JSON.stringify(initialDbState, null, 2), 'utf8');
-      return initialDbState;
+      return JSON.parse(JSON.stringify(initialDbState));
     }
     const rawData = fs.readFileSync(DB_PATH, 'utf8');
-    return JSON.parse(rawData);
+    const db = JSON.parse(rawData);
+    
+    // Safety migrations: ensure all required keys exist
+    if (!db.tasks) db.tasks = [];
+    if (!db.users) db.users = {};
+    if (!db.vault) {
+      db.vault = {
+        balance: 0,
+        contributions: []
+      };
+    } else {
+      if (db.vault.balance === undefined) db.vault.balance = 0;
+      if (!db.vault.contributions) db.vault.contributions = [];
+    }
+    
+    return db;
   } catch (error) {
     console.error("Database loading error, returning seed state:", error);
-    return initialDbState;
+    return JSON.parse(JSON.stringify(initialDbState));
   }
 }
 

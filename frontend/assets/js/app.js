@@ -249,7 +249,14 @@ async function simulateWalletConnection(providerName) {
                 body: JSON.stringify({ address: publicKey, message, signature })
             });
             
-            const authData = await authResponse.json();
+            const authText = await authResponse.text();
+            let authData;
+            try {
+                authData = JSON.parse(authText);
+            } catch (err) {
+                console.error("Failed to parse auth response as JSON. Raw text:", authText);
+                throw new Error(`Server returned non-JSON response (Status ${authResponse.status}): ${authText.substring(0, 100)}...`);
+            }
             if (authData.success) {
                 state.wallet.connected = true;
                 state.wallet.provider = providerName;
