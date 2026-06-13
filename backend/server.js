@@ -5,12 +5,37 @@ const path = require('path');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
 
+// Security middleware
+const rateLimit = require('express-rate-limit');
+
 const app = express();
 const PORT = process.env.PORT || 3005;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://earn.cool', 'https://www.earn.cool'] 
+    : '*',
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(express.json());
+
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests. Please try again later.' }
+});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20, // stricter for auth
+  message: { success: false, error: 'Too many authentication attempts. Please try again later.' }
+});
+app.use('/api/', apiLimiter);
+app.use('/api/auth', authLimiter);
 
 // Serve static frontend files on the root url
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -150,6 +175,13 @@ app.post('/api/auth', (req, res) => {
   }
   
   try {
+    // Block demo bypass attempts in production
+    if (message === 'DEMO_BYPASS' || signature === 'DEMO_BYPASS') {
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(403).json({ success: false, error: 'Demo mode is disabled in production.' });
+      }
+    }
+
     // Convert inputs to Uint8Arrays for tweetnacl verification
     const publicKeyBytes = bs58.decode(address);
     const signatureBytes = bs58.decode(signature);
@@ -273,9 +305,9 @@ app.post('/api/tasks/:id/verify', (req, res) => {
     return res.status(400).json({ success: false, error: 'This task has reached capacity.' });
   }
   
-  // Save simulated verification toggles to database
-  user.verified = verifiedSim;
-  user.sorsaScore = sorsaScoreSim;
+  // Note: verified and sorsaScore should come from server-side verification
+  // Do NOT trust client-sent values in production
+  // user.verified and user.sorsaScore are kept from their existing DB values
   
   // 1. Check verified condition
   if (task.verifiedOnly && !user.verified) {
@@ -366,15 +398,16 @@ Always respond in the SAME language the user addresses you in (if they ask in Tu
 
 Here is everything you know about earn.cool:
 1. Core Concept: earn.cool is a Web3 social-media micro-task network built on the Solana blockchain.
-2. Two Main User Roles:
+2. The Official Token: The platform's native utility token is $EARN. The real smart contract (mint address) is 8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump. It is officially launched on pump.fun!
+3. Two Main User Roles:
    - Workers: Complete social tasks (follows, likes, reposts on X/Twitter) to instantly earn $EARN tokens and SOL. They connect their Solana wallets (Phantom, Solflare, etc.) and X accounts to verify actions automatically.
    - Creators / Advertisers: Create campaigns/tasks to boost their social reach. They fund these tasks by locking $EARN tokens. They can filter participants by requirements like "Verified Accounts Only" or "Sorsa Score > 0" to filter bots.
-3. Interactive Features of the Platform:
+4. Interactive Features of the Platform:
    - Task Market: A live portal of X/Twitter tasks with real-time verification and instant token rewards.
-   - $EARN Trade (Bonding Curve): A pump.fun-like bonding curve terminal where users can buy and sell $EARN using SOL. When progress hits 100% (target: 85,000 SOL), the liquidity automatically migrates to Raydium DEX.
+   - $EARN Trade (Bonding Curve): A pump.fun-like bonding curve terminal where users can buy and sell $EARN using SOL. The official token address is 8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump. When progress hits 100% (target: 85,000 SOL), the liquidity automatically migrates to Raydium DEX.
    - EARN Vault: Staking portal where users lock their $EARN tokens to earn high-yield passive rewards paid in SOL (derived from platform commission distributions).
    - Leaderboard: Shows the top earners (Workers) and top campaigns (Creators).
-4. Goal: Be extremely helpful, guide users on how to use the wallet, create tasks, stake, or trade, and keep them hyped about $EARN! Keep answers concise, highly structured, and engaging. Avoid long paragraphs, use bullet points where helpful.`;
+5. Goal: Be extremely helpful, guide users on how to use the wallet, create tasks, stake, or trade, and keep them hyped about $EARN! Keep answers concise, highly structured, and engaging. Avoid long paragraphs, use bullet points where helpful.`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',

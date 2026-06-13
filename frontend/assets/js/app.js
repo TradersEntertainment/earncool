@@ -1239,14 +1239,60 @@ function appendChatMessage(sender, text) {
 }
 
 // -------------------------------------------------------------
-// DYNAMIC TAB TITLE / ATTENTION GRABBER
+// DYNAMIC TAB TITLE / ATTENTION GRABBER & FAVICON
 // -------------------------------------------------------------
+function generateDynamicFavicon() {
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        // Draw rounded rectangle
+        const grad = ctx.createLinearGradient(0, 0, 64, 64);
+        grad.addColorStop(0, '#a855f7'); // Purple
+        grad.addColorStop(1, '#06b6d4'); // Cyan
+        
+        ctx.fillStyle = grad;
+        
+        const x = 4, y = 4, w = 56, h = 56, r = 16;
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Draw text "E"
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px "Outfit", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('E', 32, 32);
+        
+        // Find or create link icon tag
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            link.type = 'image/png';
+            document.head.appendChild(link);
+        }
+        link.href = canvas.toDataURL('image/png');
+    } catch (e) {
+        console.error("Failed to generate dynamic favicon:", e);
+    }
+}
+
 function initDynamicTabTitle() {
     const originalTitle = document.title;
     
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-            document.title = "👋 Come back & earn $EARN! ⚡";
+            document.title = "👋 Come back & earn by clicking! 🚀";
         } else {
             document.title = originalTitle;
         }
@@ -1258,9 +1304,11 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initCyberWatcher();
         initDynamicTabTitle();
+        generateDynamicFavicon();
     });
 } else {
     initCyberWatcher();
     initDynamicTabTitle();
+    generateDynamicFavicon();
 }
 

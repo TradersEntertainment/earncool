@@ -11,11 +11,11 @@ const dbCandles = [
 
 // Mock Recent Transactions list
 const dbRecentTrades = [
-    { user: 'om8R...4s9', type: 'buy', amountSOL: 0.5, amountCLICK: 2066.12, age: '1dk önce' },
-    { user: 'An3k...xP8', type: 'buy', amountSOL: 1.2, amountCLICK: 4958.67, age: '3dk önce' },
-    { user: '8hN1...Kqy', type: 'sell', amountSOL: 0.4, amountCLICK: 1652.89, age: '5dk önce' },
-    { user: 'Sol_Degen', type: 'buy', amountSOL: 3.5, amountCLICK: 14462.80, age: '8dk önce' },
-    { user: 'J9u1...45s', type: 'buy', amountSOL: 0.2, amountCLICK: 826.44, age: '12dk önce' }
+    { user: 'om8R...4s9', type: 'buy', amountSOL: 0.5, amountCLICK: 2066.12, age: '1m ago' },
+    { user: 'An3k...xP8', type: 'buy', amountSOL: 1.2, amountCLICK: 4958.67, age: '3m ago' },
+    { user: '8hN1...Kqy', type: 'sell', amountSOL: 0.4, amountCLICK: 1652.89, age: '5m ago' },
+    { user: 'Sol_Degen', type: 'buy', amountSOL: 3.5, amountCLICK: 14462.80, age: '8m ago' },
+    { user: 'J9u1...45s', type: 'buy', amountSOL: 0.2, amountCLICK: 826.44, age: '12m ago' }
 ];
 
 let tradeMode = 'buy'; // 'buy' or 'sell'
@@ -57,7 +57,7 @@ function switchTradeMode(mode) {
         tabSell.className = 'tab-btn sell active';
         label.innerText = 'Amount to Sell ($EARN)';
         currency.innerText = '$EARN';
-        btn.innerText = 'Sat (Sell)';
+        btn.innerText = 'Sell Now';
         btn.style.background = 'linear-gradient(135deg, var(--text-error), #dc2626)';
         btn.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.3)';
         amtInput.value = '500';
@@ -79,7 +79,7 @@ function setTradeAmount(val) {
             const amount = state.wallet.balanceEARN * (val / 100);
             amtInput.value = Math.floor(amount).toString();
         } else {
-            showToast('Lütfen önce cüzdan bağlayın.', 'error');
+            showToast('Please connect your wallet first.', 'error');
             openConnectWalletModal();
         }
     }
@@ -103,14 +103,14 @@ function calculateTradeReturn() {
         
         // Price impact is positive slippage because it buys tokens
         const impact = (amount / state.stats.raydiumThresholdSOL) * 100;
-        impactElement.innerText = `%${impact.toFixed(3)} (Fiyat Yükselecek)`;
+        impactElement.innerText = `%${impact.toFixed(3)} (Price Will Increase)`;
         impactElement.style.color = 'var(--text-success)';
     } else {
         const sol = amount * state.stats.tokenPriceSOL;
         receiveElement.innerText = `${sol.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} SOL`;
         
         const impact = (sol / state.stats.raydiumThresholdSOL) * 100;
-        impactElement.innerText = `-%${impact.toFixed(3)} (Fiyat Düşecek)`;
+        impactElement.innerText = `-%${impact.toFixed(3)} (Price Will Decrease)`;
         impactElement.style.color = 'var(--text-error)';
     }
 }
@@ -248,7 +248,7 @@ function executeTokenTrade() {
     
     const amount = parseFloat(document.getElementById('tradeAmount').value);
     if (!amount || amount <= 0) {
-        showToast('Lütfen geçerli bir işlem tutarı girin.', 'error');
+        showToast('Please enter a valid trade amount.', 'error');
         return;
     }
     
@@ -262,20 +262,20 @@ function executeTokenTrade() {
     
     if (tradeMode === 'buy') {
         if (state.wallet.balanceSOL < amount) {
-            showToast(`Yetersiz SOL bakiyesi! Gerekli: ${amount} SOL, Mevcut: ${state.wallet.balanceSOL} SOL`, 'error');
+            showToast(`Insufficient SOL balance! Required: ${amount} SOL, Available: ${state.wallet.balanceSOL} SOL`, 'error');
             return;
         }
         
-        loader.querySelector('h3').innerText = 'Token Buy Nowınıyor...';
-        loader.querySelector('p').innerText = `${amount} SOL karşılığında $EARN almak için cüzdan imza isteğini onaylayın.`;
+        loader.querySelector('h3').innerText = 'Buying Tokens...';
+        loader.querySelector('p').innerText = `Approve the wallet signature request to buy $EARN with ${amount} SOL.`;
     } else {
         if (state.wallet.balanceEARN < amount) {
-            showToast(`Yetersiz $EARN bakiyesi! Gerekli: ${amount.toLocaleString()} $EARN, Mevcut: ${state.wallet.balanceEARN.toLocaleString()} $EARN`, 'error');
+            showToast(`Insufficient $EARN balance! Required: ${amount.toLocaleString()} $EARN, Available: ${state.wallet.balanceEARN.toLocaleString()} $EARN`, 'error');
             return;
         }
         
-        loader.querySelector('h3').innerText = 'Token Satılıyor...';
-        loader.querySelector('p').innerText = `${amount.toLocaleString()} $EARN satmak için cüzdan imza isteğini onaylayın.`;
+        loader.querySelector('h3').innerText = 'Selling Tokens...';
+        loader.querySelector('p').innerText = `Approve the wallet signature request to sell ${amount.toLocaleString()} $EARN.`;
     }
     
     overlay.classList.add('active');
@@ -308,7 +308,7 @@ function executeTokenTrade() {
                 type: 'buy',
                 amountSOL: amount,
                 amountCLICK: returnVal,
-                age: 'şimdi'
+                age: 'just now'
             });
             
             triggerTokenRainAnimation();
@@ -334,7 +334,7 @@ function executeTokenTrade() {
                 type: 'sell',
                 amountSOL: returnVal,
                 amountCLICK: amount,
-                age: 'şimdi'
+                age: 'just now'
             });
             
             showToast(`Success! +${returnVal.toFixed(4)} SOL transferred to your wallet.`, 'success');
@@ -395,7 +395,7 @@ function renderRecentTrades() {
         
         const isBuy = trade.type === 'buy';
         const color = isBuy ? 'var(--text-success)' : 'var(--text-error)';
-        const label = isBuy ? 'AL' : 'SAT';
+        const label = isBuy ? 'BUY' : 'SELL';
         
         div.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.5rem;">
