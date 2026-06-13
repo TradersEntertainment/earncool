@@ -35,10 +35,23 @@ const app = express();
 const PORT = process.env.PORT || 3005;
 
 // Middleware
+const allowedOrigins = [
+  'https://earn.cool', 
+  'https://www.earn.cool', 
+  'http://localhost:3005', 
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://earn.cool', 'https://www.earn.cool'] 
-    : '*',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST'],
   credentials: true
 }));

@@ -1,5 +1,6 @@
-// Global API Base URL definition (Uses relative paths for seamless dev/prod/domain support)
-const API_BASE = '';
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://earncool.up.railway.app';
 
 // Global App State
 const state = {
