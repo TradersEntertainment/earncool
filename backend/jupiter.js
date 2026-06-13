@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const { Connection, Keypair, VersionedTransaction } = require('@solana/web3.js');
 
 const EARN_TOKEN_MINT = '8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump';
