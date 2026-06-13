@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
+const { getEarnPriceUsd, getSolPriceUsd, generateSwapTransaction } = require('./jupiter');
 
 // Security middleware
 const rateLimit = require('express-rate-limit');
@@ -45,96 +46,11 @@ const DB_PATH = process.env.NODE_ENV === 'production' ? '/data/database.json' : 
 
 // Initial seed database state
 const initialDbState = {
-  tasks: [
-    {
-      id: 'task-1',
-      type: 'follow',
-      title: 'Follow earn.cool Official X Account',
-      link: 'https://x.com/earndotcool', // can be earn.cool in description
-      reward: 100,
-      creator: 'earn.cool Admin',
-      capacity: 1000,
-      completedCount: 421,
-      completedBy: [],
-      verifiedOnly: false,
-      minSorsa: 0
-    },
-    {
-      id: 'task-2',
-      type: 'follow',
-      title: 'Verified X Followers Campaign (earn.cool Devs)',
-      link: 'https://x.com/earndotcool',
-      reward: 120,
-      creator: 'earn.cool Devs',
-      capacity: 200,
-      completedCount: 45,
-      completedBy: [],
-      verifiedOnly: true,
-      minSorsa: 0
-    },
-    {
-      id: 'task-3',
-      type: 'repost',
-      title: 'Sorsa Score > 0 Trusted Account Raid (Bonk Team)',
-      link: 'https://x.com/earndotcool/status/179920199',
-      reward: 115,
-      creator: 'Bonk Official',
-      capacity: 250,
-      completedCount: 102,
-      completedBy: [],
-      verifiedOnly: false,
-      minSorsa: 1
-    },
-    {
-      id: 'task-4',
-      type: 'feedback',
-      title: 'Leave Feedback About earn.cool Interface on Our Website',
-      link: 'https://earn.cool/feedback',
-      reward: 200,
-      creator: 'Product Manager',
-      capacity: 200,
-      completedCount: 45,
-      completedBy: [],
-      verifiedOnly: false,
-      minSorsa: 0
-    },
-    {
-      id: 'task-5',
-      type: 'follow',
-      title: 'Follow @solana Official Developer Account',
-      link: 'https://x.com/solana',
-      reward: 100,
-      creator: 'Solana Foundation',
-      capacity: 2500,
-      completedCount: 1845,
-      completedBy: [],
-      verifiedOnly: false,
-      minSorsa: 0
-    },
-    {
-      id: 'task-6',
-      type: 'like',
-      title: 'Like Phantom Wallet Multi-Chain Update',
-      link: 'https://x.com/phantom/status/18892012',
-      reward: 60,
-      creator: 'Phantom Wallet',
-      capacity: 1200,
-      completedCount: 802,
-      completedBy: [],
-      verifiedOnly: false,
-      minSorsa: 0
-    }
-  ],
+  tasks: [],
   users: {},
   vault: {
-    balance: 4467250.00,
-    contributions: [
-      { time: '1m ago', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Worker completed task (Commission)' },
-      { time: '2m ago', amount: '1.00 $EARN', job: '#c123df10', reason: 'Worker completed task (Commission)' },
-      { time: '3m ago', amount: '3.00 $EARN', job: '#e23d9b01', reason: 'Worker completed task (Commission)' },
-      { time: '4m ago', amount: '4.00 $EARN', job: '#b4819d20', reason: 'Worker completed task (Commission)' },
-      { time: '5m ago', amount: '2.40 $EARN', job: '#a9e96dc0', reason: 'Worker completed task (Commission)' }
-    ]
+    balance: 0,
+    contributions: []
   }
 };
 
@@ -225,56 +141,80 @@ app.get('/api/tasks', (req, res) => {
   res.json({ success: true, tasks: db.tasks });
 });
 
-// 3. CREATE TASK (LOCK BUDGET)
-app.post('/api/tasks', (req, res) => {
-  const { task, creatorAddress } = req.body;
+// 3. GET CURRENT PRICES
+app.get('/api/price', async (req, res) => {
+  const earnPrice = await getEarnPriceUsd();
+  const solPrice = await getSolPriceUsd();
+  res.json({ success: true, earnPriceUsd: earnPrice, solPriceUsd: solPrice });
+});
+
+// 4. CREATE TASK (GENERATE SWAP TRANSACTION)
+app.post('/api/tasks/create', async (req, res) => {
+  const { task, creatorAddress, usdBudget } = req.body;
   
-  if (!task || !creatorAddress) {
-    return res.status(400).json({ success: false, error: 'Missing data: task and creatorAddress are required.' });
+  if (!task || !creatorAddress || !usdBudget) {
+    return res.status(400).json({ success: false, error: 'Missing data: task, creatorAddress, and usdBudget are required.' });
   }
   
+  try {
+    // We use a demo treasury wallet if not set in env
+    const TREASURY_WALLET = process.env.TREASURY_WALLET || '11111111111111111111111111111111'; 
+
+    const swapData = await generateSwapTransaction(usdBudget, creatorAddress, TREASURY_WALLET);
+    
+    // Save pending task in memory/DB to be confirmed later
+    const db = loadDb();
+    const pendingTaskId = `task-${Date.now()}`;
+    db.tasks.unshift({
+      id: pendingTaskId,
+      type: task.type,
+      title: task.title,
+      link: task.link,
+      budgetUsd: usdBudget,
+      rewardEarnRaw: swapData.expectedEarnAmount,
+      creator: creatorAddress.slice(0, 6) + '...' + creatorAddress.slice(-4),
+      capacity: task.capacity || 100, // default 100 participants
+      completedCount: 0,
+      completedBy: [],
+      status: 'pending_payment'
+    });
+    saveDb(db);
+
+    res.json({ 
+      success: true, 
+      taskId: pendingTaskId,
+      transactionBase64: swapData.transactionBase64,
+      expectedEarnAmount: swapData.expectedEarnAmount,
+      solAmount: swapData.solAmount
+    });
+  } catch (error) {
+    console.error('Task creation error:', error);
+    res.status(500).json({ success: false, error: 'Failed to generate payment transaction.' });
+  }
+});
+
+// 5. CONFIRM TASK PAYMENT
+app.post('/api/tasks/confirm', (req, res) => {
+  const { taskId, txSignature } = req.body;
+  
+  if (!taskId || !txSignature) {
+    return res.status(400).json({ success: false, error: 'taskId and txSignature are required.' });
+  }
+
   const db = loadDb();
-  const user = db.users[creatorAddress];
+  const taskIndex = db.tasks.findIndex(t => t.id === taskId);
   
-  if (!user) {
-    return res.status(404).json({ success: false, error: 'User profile not found. Please verify your wallet first.' });
+  if (taskIndex === -1) {
+    return res.status(404).json({ success: false, error: 'Task not found.' });
   }
-  
-  const baseReward = task.reward * task.capacity;
-  const fee = baseReward * 0.02;
-  let qualityFee = 0;
-  
-  if (task.verifiedOnly) qualityFee = baseReward * 0.20;
-  else if (task.minSorsa > 0) qualityFee = baseReward * 0.15;
-  
-  const totalCost = baseReward + fee + qualityFee;
-  
-  if (user.balanceEARN < totalCost) {
-    return res.status(400).json({ success: false, error: `Insufficient balance! Required: ${totalCost} $EARN, Available: ${user.balanceEARN} $EARN` });
-  }
-  
-  // Deduct cost and save
-  user.balanceEARN -= totalCost;
-  
-  // Insert new task
-  const newTask = {
-    id: `task-${Date.now()}`,
-    type: task.type,
-    title: task.title,
-    link: task.link,
-    reward: task.reward,
-    creator: creatorAddress.slice(0, 6) + '...' + creatorAddress.slice(-4),
-    capacity: task.capacity,
-    completedCount: 0,
-    completedBy: [],
-    verifiedOnly: task.verifiedOnly,
-    minSorsa: task.minSorsa
-  };
-  
-  db.tasks.unshift(newTask);
+
+  // In a real production app, we would verify the txSignature on the Solana blockchain
+  // to ensure the treasury actually received the exact amount of $EARN.
+  // For now, we activate the task.
+  db.tasks[taskIndex].status = 'active';
   saveDb(db);
-  
-  res.json({ success: true, task: newTask, totalCost, user });
+
+  res.json({ success: true, message: 'Task activated successfully!', task: db.tasks[taskIndex] });
 });
 
 // 4. VERIFY AND PAY TASK COMPLETION
@@ -323,10 +263,16 @@ app.post('/api/tasks/:id/verify', (req, res) => {
   task.completedBy.push(walletAddress);
   task.completedCount += 1;
   
-  user.balanceEARN += task.reward;
+  // Calculate individual reward (2% commission taken from total pool)
+  const totalEarn = task.rewardEarnRaw || 0;
+  const rawRewardPerUser = Math.floor((totalEarn * 0.98) / (task.capacity || 100)); 
+  const earnReward = rawRewardPerUser / 1e6; // Pump.fun tokens use 6 decimals
+  
+  user.balanceEARN += earnReward;
   
   // Add platform commission (2%) contribution to the Vault
-  const comm = (task.reward * 0.02).toFixed(2);
+  const commRaw = Math.floor((totalEarn * 0.02) / (task.capacity || 100));
+  const comm = (commRaw / 1e6).toFixed(4);
   db.vault.balance += parseFloat(comm);
   db.vault.contributions.unshift({
     time: 'just now',
