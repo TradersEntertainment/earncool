@@ -30,7 +30,12 @@ closeWalletBtn?.addEventListener('click', () => walletModal.classList.add('hidde
 // MetaMask Initialization
 async function initMetaMask() {
     try {
-        const infuraKey = import.meta.env.VITE_INFURA_API_KEY || 'c9779dfec73a4b67b1407ee293a54b42'; // fallback demo key
+        const infuraKey = import.meta.env.VITE_INFURA_API_KEY;
+        if (!infuraKey) {
+            console.warn("VITE_INFURA_API_KEY is not set. MetaMask connection will fail.");
+            return;
+        }
+        
         window.appState.mmClient = await createSolanaClient({
             dapp: {
                 name: 'earn.cool',
