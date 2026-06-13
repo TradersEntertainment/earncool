@@ -56,14 +56,17 @@ async function getSolPriceUsd() {
 // ------------------------------------------
 // Auto-Buy Execution
 // ------------------------------------------
-// Uses the SOL in the treasury to buy EARN automatically
+// Uses 90% of the SOL in the treasury to buy EARN automatically (10% remains as platform commission)
 async function autoBuyEarnFromTreasury(usdAmount) {
     try {
         const solPrice = await getSolPriceUsd();
         if (!solPrice) throw new Error('Could not fetch SOL price');
         
-        const solAmount = usdAmount / solPrice;
-        const lamports = Math.floor(solAmount * 1e9);
+        const totalSolAmount = usdAmount / solPrice;
+        
+        // Use 90% of the SOL to buy EARN, keep 10% in Treasury
+        const buySolAmount = totalSolAmount * 0.90;
+        const lamports = Math.floor(buySolAmount * 1e9);
 
         // 1. Get Quote
         const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${SOL_MINT}&outputMint=${EARN_TOKEN_MINT}&amount=${lamports}&slippageBps=500`;
