@@ -1,7 +1,5 @@
-// Global API Base URL definition (Autodetects environment for seamless dev/prod integration)
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? ''
-    : 'https://earnc00l.up.railway.app';
+// Global API Base URL definition (Uses relative paths for seamless dev/prod/domain support)
+const API_BASE = '';
 
 // Global App State
 const state = {

@@ -80,10 +80,8 @@ const dbTasks = [
     }
 ];
 
-// Global API Base URL (Synchronized with app.js configuration)
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? ''
-    : 'https://earnc00l.up.railway.app';
+// Global API Base URL
+const API_BASE = '';
 
 async function fetchTasks() {
     try {
