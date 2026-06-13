@@ -1,7 +1,28 @@
-const express = require('express');
-const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+
+// Setup log interception
+const logPath = path.join(__dirname, 'server.log');
+const logStream = fs.createWriteStream(logPath, { flags: 'a' });
+const originalLog = console.log;
+const originalError = console.error;
+
+console.log = function(...args) {
+  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+  logStream.write(`[LOG] ${new Date().toISOString()}: ${msg}\n`);
+  originalLog.apply(console, args);
+};
+
+console.error = function(...args) {
+  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' ');
+  logStream.write(`[ERROR] ${new Date().toISOString()}: ${msg}\n`);
+  originalError.apply(console, args);
+};
+
+console.log("Server logger initialized.");
+
+const express = require('express');
+const cors = require('cors');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
 const axios = require('axios');
@@ -22,6 +43,12 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+
+// Log incoming requests
+app.use((req, res, next) => {
+  console.log(`[REQ] ${req.method} ${req.url}`);
+  next();
+});
 
 // Rate limiting
 const apiLimiter = rateLimit({
@@ -454,6 +481,20 @@ Here is everything you know about earn.cool:
   } catch (error) {
     console.error('Groq Chat Server Error:', error);
     res.status(500).json({ success: false, error: 'Internal server error while calling AI service.' });
+  }
+});
+
+// Debug logs endpoint
+app.get('/api/debug-logs', (req, res) => {
+  try {
+    if (fs.existsSync(logPath)) {
+      const content = fs.readFileSync(logPath, 'utf8');
+      res.type('text/plain').send(content);
+    } else {
+      res.send('No log file found.');
+    }
+  } catch (err) {
+    res.status(500).send('Error reading log: ' + err.message);
   }
 });
 

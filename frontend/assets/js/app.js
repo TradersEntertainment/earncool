@@ -682,8 +682,9 @@ function showToast(message, type = 'success') {
     
     toast.innerHTML = `
         <i data-lucide="${icon}" style="width: 18px; color: inherit;"></i>
-        <span>${message}</span>
+        <span class="toast-text"></span>
     `;
+    toast.querySelector('.toast-text').textContent = message;
     
     container.appendChild(toast);
     lucide.createIcons();
