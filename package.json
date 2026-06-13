@@ -5,10 +5,10 @@
     "node": "22.x"
   },
   "description": "Premium Web3 microtask platform clone of wurk.fun on Solana",
-  "main": "index.html",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "cd frontend && npm install && npx vite build && cd ../backend && npm install && node server.js",
-    "dev": "cd backend && node server.js"
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js"
   },
   "keywords": [
     "solana",
