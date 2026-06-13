@@ -112,7 +112,7 @@ async function autoBuyEarnFromTreasury(usdAmount) {
             success: true,
             txid: txid,
             expectedEarnAmount: quoteData.outAmount,
-            solAmount: solAmount
+            solAmount: buySolAmount
         };
 
     } catch (error) {
