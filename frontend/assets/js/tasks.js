@@ -1,191 +1,146 @@
-// ==========================================
-// earn.cool v2 - Tasks & Swap Logic
-// ==========================================
+import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from '@solana/web3.js';
 
 const API = '/api';
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadTasks();
-    setupCreateTaskForm();
-});
-
-// ------------------------------------------
-// Load Tasks
-// ------------------------------------------
-async function loadTasks() {
-    const container = document.getElementById('tasksContainer');
+// Render Tasks
+async function renderActiveTasks() {
     try {
-        const res = await fetch(`${API}/tasks`);
-        const data = await res.json();
+        const response = await fetch(`${API}/tasks`);
+        const data = await response.json();
         
-        if (data.success) {
-            renderTasks(data.tasks);
+        const tasksList = document.getElementById('tasks-list');
+        tasksList.innerHTML = '';
+        
+        if (!data.tasks || data.tasks.length === 0) {
+            tasksList.innerHTML = `<div class="empty-state">No active tasks at the moment. Create one above!</div>`;
+            return;
         }
-    } catch (err) {
-        container.innerHTML = `<div class="empty-state text-danger">Failed to load tasks.</div>`;
+
+        data.tasks.forEach(task => {
+            if(task.status !== 'active') return;
+
+            const taskCard = document.createElement('div');
+            taskCard.className = 'task-card fade-in';
+            
+            taskCard.innerHTML = `
+                <div class="task-info">
+                    <span class="task-type">${task.type.toUpperCase()}</span>
+                    <h3 class="task-title">${task.title}</h3>
+                    <p class="task-meta">By ${task.creator} • ${task.completedCount}/${task.capacity} Participants</p>
+                </div>
+                <div class="task-reward">
+                    <span class="reward-amount">+${Math.floor(task.rewardEarnRaw / 1e6)}</span>
+                    <span class="reward-currency">$EARN</span>
+                </div>
+            `;
+            
+            tasksList.appendChild(taskCard);
+        });
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
     }
 }
 
-function renderTasks(tasks) {
-    const container = document.getElementById('tasksContainer');
-    
-    // Filter active tasks only
-    const activeTasks = tasks.filter(t => t.status !== 'pending_payment');
-    
-    if (activeTasks.length === 0) {
-        container.innerHTML = `<div class="empty-state">No tasks created today yet. Be the first!</div>`;
+// Create Task Flow
+document.getElementById('create-task-btn')?.addEventListener('click', async () => {
+    if (!window.appState.wallet) {
+        alert("Please connect your wallet first!");
         return;
     }
-    
-    container.innerHTML = activeTasks.map(task => `
-        <div class="task-card">
-            <div class="task-info">
-                <div class="task-icon">
-                    <i class="${getIconForType(task.type)}"></i>
-                </div>
-                <div class="task-details">
-                    <h4>${task.title || 'Complete Social Task'}</h4>
-                    <div class="task-meta">
-                        <span><i class="ri-link"></i> ${task.type.toUpperCase()}</span>
-                        <span><i class="ri-user-smile-line"></i> ${task.completedCount}/${task.capacity} Users</span>
-                    </div>
-                </div>
-            </div>
-            <div class="task-reward">
-                <span class="reward-amount">+${formatNumber(task.rewardEarnRaw ? task.rewardEarnRaw / 1e6 : 100)} EARN</span>
-                <button class="btn-outline" style="padding: 0.35rem 1rem; margin-top: 0.5rem;" onclick="window.open('${task.link}', '_blank')">Do Task</button>
-            </div>
-        </div>
-    `).join('');
-}
 
-function getIconForType(type) {
-    if (type === 'follow') return 'ri-user-add-line';
-    if (type === 'like') return 'ri-heart-line text-danger';
-    if (type === 'repost') return 'ri-repeat-2-line text-accent';
-    return 'ri-links-line';
-}
+    const type = document.getElementById('task-type').value;
+    const link = document.getElementById('task-link').value;
+    const budget = parseFloat(document.getElementById('task-budget').value);
 
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(num);
-}
+    if (!link || !budget || budget < 1) {
+        alert("Please enter a valid link and minimum $1 budget.");
+        return;
+    }
 
-// ------------------------------------------
-// Create Task & Web3 Swap Flow
-// ------------------------------------------
-function setupCreateTaskForm() {
-    const form = document.getElementById('createTaskForm');
-    const budgetInput = document.getElementById('taskBudget');
-    const quoteSummary = document.getElementById('quoteSummary');
-    const quoteSol = document.getElementById('quoteSol');
-    const quoteEarn = document.getElementById('quoteEarn');
-    
-    // Live Quote Preview
-    budgetInput.addEventListener('input', () => {
-        const usd = parseFloat(budgetInput.value);
-        if (isNaN(usd) || usd <= 0) {
-            quoteSummary.classList.add('hidden');
-            return;
-        }
+    const submitBtn = document.getElementById('create-task-btn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Creating...';
+
+    try {
+        // 1. Get transfer intent
+        const createRes = await fetch(`${API}/tasks/create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                task: { type, title: `Interact with ${link}`, link },
+                creatorAddress: window.appState.wallet,
+                usdBudget: budget
+            })
+        });
+
+        const createData = await createRes.json();
+        if (!createData.success) throw new Error(createData.error);
         
-        if (window.appState && window.appState.solPriceUsd && window.appState.earnPriceUsd) {
-            const sol = usd / window.appState.solPriceUsd;
-            const earn = usd / window.appState.earnPriceUsd;
-            
-            quoteSol.innerText = `${sol.toFixed(4)} SOL`;
-            quoteEarn.innerText = `${formatNumber(earn)} $EARN`;
-            quoteSummary.classList.remove('hidden');
-        }
-    });
+        submitBtn.innerHTML = '<i class="ri-fingerprint-line"></i> Please Sign in Wallet';
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        // 2. Build Transaction
+        const connection = new Connection("https://api.mainnet-beta.solana.com");
+        const fromPubkey = new PublicKey(window.appState.wallet);
+        const toPubkey = new PublicKey(createData.treasuryAddress);
+        const lamports = Math.floor(createData.solAmount * LAMPORTS_PER_SOL);
+
+        const transaction = new Transaction().add(
+            SystemProgram.transfer({ fromPubkey, toPubkey, lamports })
+        );
+
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = fromPubkey;
+
+        // 3. Sign and Send (Phantom vs MetaMask)
+        let signature;
         
-        if (!window.appState || !window.appState.wallet) {
-            alert("Please connect your wallet first!");
-            return;
-        }
-
-        const type = document.getElementById('taskType').value;
-        const link = document.getElementById('taskLink').value;
-        const budget = parseFloat(document.getElementById('taskBudget').value);
-        const submitBtn = document.getElementById('createTaskSubmitBtn');
-        
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Generating Transaction...';
-
-        try {
-            // 1. Call backend to get swap transaction
-            const createRes = await fetch(`${API}/tasks/create`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    task: { type, link, title: `New ${type} Campaign` },
-                    creatorAddress: window.appState.wallet,
-                    usdBudget: budget
-                })
-            });
-            
-            const createData = await createRes.json();
-            if (!createData.success) throw new Error(createData.error);
-            
-            submitBtn.innerHTML = '<i class="ri-fingerprint-line"></i> Please Sign in Wallet';
-
-            // 2. Generate Transfer Transaction
-            const { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = solanaWeb3;
-            const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
-            
-            const fromPubkey = new PublicKey(window.appState.wallet);
-            const toPubkey = new PublicKey(createData.treasuryAddress);
-            const lamports = Math.floor(createData.solAmount * LAMPORTS_PER_SOL);
-
-            const transaction = new Transaction().add(
-                SystemProgram.transfer({
-                    fromPubkey,
-                    toPubkey,
-                    lamports
-                })
-            );
-
-            const { blockhash } = await connection.getLatestBlockhash();
-            transaction.recentBlockhash = blockhash;
-            transaction.feePayer = fromPubkey;
-
-            // 3. Ask Phantom to sign and send
+        if (window.appState.walletType === 'metamask') {
+            submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Sending via MetaMask...';
+            // Wait, MetaMask Wallet Standard has slightly different API.
+            // Actually, we can use the signAndSendTransaction method from the standard if the mmClient returns a standard provider.
+            // Using signAndSendTransaction string from MetaMask directly
+            const response = await window.appState.mmClient.signAndSendTransaction(transaction);
+            signature = response.signature;
+        } else {
+            // Phantom Native
             const signedTransaction = await window.solana.signTransaction(transaction);
-            
             submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Confirming on Chain...';
-            
-            const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
+            signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
                 skipPreflight: false,
                 maxRetries: 2
             });
-
-            // 4. Notify backend of confirmation
-            const confirmRes = await fetch(`${API}/tasks/confirm`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    taskId: createData.taskId,
-                    txSignature: signature
-                })
-            });
-            
-            const confirmData = await confirmRes.json();
-            if (confirmData.success) {
-                alert("Task Created Successfully! The SOL was swapped for $EARN.");
-                document.getElementById('createTaskModal').classList.add('hidden');
-                loadTasks(); // reload
-            } else {
-                throw new Error(confirmData.error);
-            }
-
-        } catch (error) {
-            console.error("Task creation failed:", error);
-            alert("Transaction failed or was rejected: " + error.message);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Pay with Wallet';
         }
-    });
-}
+
+        // 4. Confirm with Backend
+        submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Finalizing Auto-Buy...';
+        
+        const confirmRes = await fetch(`${API}/tasks/confirm`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                taskId: createData.taskId,
+                txSignature: signature
+            })
+        });
+
+        const confirmData = await confirmRes.json();
+        if (!confirmData.success) throw new Error(confirmData.error);
+
+        alert("Task Created successfully! " + confirmData.message);
+        
+        // Reset Form
+        document.getElementById('task-link').value = '';
+        document.getElementById('task-budget').value = '';
+        renderActiveTasks();
+
+    } catch (error) {
+        console.error(error);
+        alert(`Transaction failed: ${error.message}`);
+    } finally {
+        submitBtn.innerHTML = originalText;
+    }
+});
+
+// Initial load
+renderActiveTasks();

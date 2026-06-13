@@ -4,7 +4,7 @@
   "description": "Premium Web3 microtask platform clone of wurk.fun on Solana",
   "main": "index.html",
   "scripts": {
-    "start": "cd backend && npm install && node server.js",
+    "start": "cd frontend && npm install && npx vite build && cd ../backend && npm install && node server.js",
     "dev": "cd backend && node server.js"
   },
   "keywords": [

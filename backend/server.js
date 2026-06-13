@@ -38,8 +38,13 @@ const authLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 app.use('/api/auth', authLimiter);
 
-// Serve static frontend files on the root url
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Serve Vite static files from dist
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Fallback for SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 // JSON File Database Setup (Uses mounted Railway Volume "/data" in production for persistence)
 const DB_PATH = process.env.NODE_ENV === 'production' ? '/data/database.json' : path.join(__dirname, 'database.json');
