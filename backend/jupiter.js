@@ -1,9 +1,30 @@
 const fetch = require('node-fetch');
+const { Connection, Keypair, VersionedTransaction } = require('@solana/web3.js');
 
 const EARN_TOKEN_MINT = '8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 
-// 1. Get EARN Price in USD (USDC)
+// ------------------------------------------
+// Treasury Wallet Setup
+// ------------------------------------------
+let treasuryKeypair = null;
+try {
+    if (process.env.TREASURY_SECRET_KEY) {
+        const secretKey = Uint8Array.from(JSON.parse(process.env.TREASURY_SECRET_KEY));
+        treasuryKeypair = Keypair.fromSecretKey(secretKey);
+    } else {
+        // Fallback for local testing
+        treasuryKeypair = Keypair.fromSecretKey(Uint8Array.from([177,109,145,78,125,108,194,159,198,29,93,120,24,39,195,205,63,196,84,238,20,11,183,60,71,222,104,232,27,120,135,119,31,52,190,82,165,25,9,75,59,85,20,128,49,183,153,77,118,113,83,102,102,15,237,196,233,74,57,86,197,35,197,135]));
+    }
+} catch (e) {
+    console.warn("Failed to load TREASURY_SECRET_KEY", e.message);
+}
+
+const TREASURY_PUBKEY = treasuryKeypair ? treasuryKeypair.publicKey.toString() : '36pHYRhbntUAJkR2RjudM7eaTXtNoMibnmVyNEnWMaqt';
+
+// ------------------------------------------
+// Price Functions
+// ------------------------------------------
 async function getEarnPriceUsd() {
     try {
         const response = await fetch(`https://price.jup.ag/v6/price?ids=${EARN_TOKEN_MINT}`);
@@ -18,7 +39,6 @@ async function getEarnPriceUsd() {
     }
 }
 
-// 2. Get SOL Price in USD
 async function getSolPriceUsd() {
     try {
         const response = await fetch(`https://price.jup.ag/v6/price?ids=${SOL_MINT}`);
@@ -33,64 +53,76 @@ async function getSolPriceUsd() {
     }
 }
 
-// 3. Generate Swap Transaction
-// Converts a specific USD amount of SOL into EARN and sends to treasury
-async function generateSwapTransaction(usdAmount, userPublicKey, treasuryWallet) {
+// ------------------------------------------
+// Auto-Buy Execution
+// ------------------------------------------
+// Uses the SOL in the treasury to buy EARN automatically
+async function autoBuyEarnFromTreasury(usdAmount) {
     try {
-        // Step 1: Calculate how much SOL is needed for this USD amount
         const solPrice = await getSolPriceUsd();
         if (!solPrice) throw new Error('Could not fetch SOL price');
         
         const solAmount = usdAmount / solPrice;
         const lamports = Math.floor(solAmount * 1e9);
 
-        // Step 2: Get Quote from Jupiter
-        const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${SOL_MINT}&outputMint=${EARN_TOKEN_MINT}&amount=${lamports}&slippageBps=500`; // 5% slippage for volatile tokens
+        // 1. Get Quote
+        const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${SOL_MINT}&outputMint=${EARN_TOKEN_MINT}&amount=${lamports}&slippageBps=500`;
         const quoteResponse = await fetch(quoteUrl);
         const quoteData = await quoteResponse.json();
         
-        if (quoteData.error) {
-            throw new Error(`Jupiter Quote Error: ${quoteData.error}`);
-        }
+        if (quoteData.error) throw new Error(`Jupiter Quote Error: ${quoteData.error}`);
 
-        // Step 3: Get Swap Transaction
+        // 2. Get Swap Transaction for Treasury Wallet
         const swapRequestBody = {
             quoteResponse: quoteData,
-            userPublicKey: userPublicKey,
-            wrapAndUnwrapSol: true,
-            destinationWallet: treasuryWallet // The treasury receives the EARN tokens
+            userPublicKey: TREASURY_PUBKEY,
+            wrapAndUnwrapSol: true
         };
 
         const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(swapRequestBody)
         });
 
         const swapData = await swapResponse.json();
+        if (swapData.error) throw new Error(`Jupiter Swap Error: ${swapData.error}`);
 
-        if (swapData.error) {
-            throw new Error(`Jupiter Swap Error: ${swapData.error}`);
-        }
+        // 3. Sign and Execute via Web3
+        if (!treasuryKeypair) throw new Error("Treasury keypair is not configured");
 
-        // Returns base64 encoded transaction
+        const connection = new Connection("https://api.mainnet-beta.solana.com");
+        
+        // Decode base64 transaction
+        const txBytes = Uint8Array.from(Buffer.from(swapData.swapTransaction, 'base64'));
+        const transaction = VersionedTransaction.deserialize(txBytes);
+
+        // Sign with treasury's secret key
+        transaction.sign([treasuryKeypair]);
+
+        // Broadcast to Solana Mainnet
+        const txid = await connection.sendRawTransaction(transaction.serialize(), {
+            skipPreflight: true,
+            maxRetries: 2
+        });
+
         return {
-            transactionBase64: swapData.swapTransaction,
-            expectedEarnAmount: quoteData.outAmount, // in raw token units
+            success: true,
+            txid: txid,
+            expectedEarnAmount: quoteData.outAmount,
             solAmount: solAmount
         };
 
     } catch (error) {
-        console.error('Error generating swap tx:', error);
-        throw error;
+        console.error('Auto-Buy execution failed:', error.message);
+        return { success: false, error: error.message };
     }
 }
 
 module.exports = {
     getEarnPriceUsd,
     getSolPriceUsd,
-    generateSwapTransaction,
-    EARN_TOKEN_MINT
+    autoBuyEarnFromTreasury,
+    EARN_TOKEN_MINT,
+    TREASURY_PUBKEY
 };

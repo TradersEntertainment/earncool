@@ -131,24 +131,33 @@ function setupCreateTaskForm() {
             
             submitBtn.innerHTML = '<i class="ri-fingerprint-line"></i> Please Sign in Wallet';
 
-            // 2. Decode transaction and send to Phantom
-            // Jupiter v6 returns a base64 encoded VersionedTransaction
-            const { VersionedTransaction } = solanaWeb3;
-            
-            // Note: In browser environment without Buffer, we need to decode base64 manually
-            const txBytes = Uint8Array.from(atob(createData.transactionBase64), c => c.charCodeAt(0));
-            const transaction = VersionedTransaction.deserialize(txBytes);
-
-            // 3. Ask Phantom to sign and send
+            // 2. Generate Transfer Transaction
+            const { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } = solanaWeb3;
             const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
             
-            // We use signTransaction and then sendRawTransaction
+            const fromPubkey = new PublicKey(window.appState.wallet);
+            const toPubkey = new PublicKey(createData.treasuryAddress);
+            const lamports = Math.floor(createData.solAmount * LAMPORTS_PER_SOL);
+
+            const transaction = new Transaction().add(
+                SystemProgram.transfer({
+                    fromPubkey,
+                    toPubkey,
+                    lamports
+                })
+            );
+
+            const { blockhash } = await connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = fromPubkey;
+
+            // 3. Ask Phantom to sign and send
             const signedTransaction = await window.solana.signTransaction(transaction);
             
             submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Confirming on Chain...';
             
             const signature = await connection.sendRawTransaction(signedTransaction.serialize(), {
-                skipPreflight: true,
+                skipPreflight: false,
                 maxRetries: 2
             });
 

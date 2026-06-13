@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
-const { getEarnPriceUsd, getSolPriceUsd, generateSwapTransaction } = require('./jupiter');
+const { getEarnPriceUsd, getSolPriceUsd, autoBuyEarnFromTreasury, TREASURY_PUBKEY } = require('./jupiter');
 
 // Security middleware
 const rateLimit = require('express-rate-limit');
@@ -148,7 +148,7 @@ app.get('/api/price', async (req, res) => {
   res.json({ success: true, earnPriceUsd: earnPrice, solPriceUsd: solPrice });
 });
 
-// 4. CREATE TASK (GENERATE SWAP TRANSACTION)
+// 4. CREATE TASK (GENERATE TRANSFER INTENT)
 app.post('/api/tasks/create', async (req, res) => {
   const { task, creatorAddress, usdBudget } = req.body;
   
@@ -157,12 +157,11 @@ app.post('/api/tasks/create', async (req, res) => {
   }
   
   try {
-    // We use a demo treasury wallet if not set in env
-    const TREASURY_WALLET = process.env.TREASURY_WALLET || '11111111111111111111111111111111'; 
-
-    const swapData = await generateSwapTransaction(usdBudget, creatorAddress, TREASURY_WALLET);
+    const solPrice = await getSolPriceUsd();
+    if (!solPrice) throw new Error('Could not fetch SOL price');
+    const solAmount = usdBudget / solPrice;
     
-    // Save pending task in memory/DB to be confirmed later
+    // Save pending task in memory/DB
     const db = loadDb();
     const pendingTaskId = `task-${Date.now()}`;
     db.tasks.unshift({
@@ -171,9 +170,9 @@ app.post('/api/tasks/create', async (req, res) => {
       title: task.title,
       link: task.link,
       budgetUsd: usdBudget,
-      rewardEarnRaw: swapData.expectedEarnAmount,
+      solAmount: solAmount,
       creator: creatorAddress.slice(0, 6) + '...' + creatorAddress.slice(-4),
-      capacity: task.capacity || 100, // default 100 participants
+      capacity: task.capacity || 100,
       completedCount: 0,
       completedBy: [],
       status: 'pending_payment'
@@ -183,18 +182,17 @@ app.post('/api/tasks/create', async (req, res) => {
     res.json({ 
       success: true, 
       taskId: pendingTaskId,
-      transactionBase64: swapData.transactionBase64,
-      expectedEarnAmount: swapData.expectedEarnAmount,
-      solAmount: swapData.solAmount
+      treasuryAddress: TREASURY_PUBKEY,
+      solAmount: solAmount
     });
   } catch (error) {
     console.error('Task creation error:', error);
-    res.status(500).json({ success: false, error: 'Failed to generate payment transaction.' });
+    res.status(500).json({ success: false, error: 'Failed to create payment intent.' });
   }
 });
 
-// 5. CONFIRM TASK PAYMENT
-app.post('/api/tasks/confirm', (req, res) => {
+// 5. CONFIRM TASK PAYMENT & AUTO-BUY
+app.post('/api/tasks/confirm', async (req, res) => {
   const { taskId, txSignature } = req.body;
   
   if (!taskId || !txSignature) {
@@ -208,13 +206,32 @@ app.post('/api/tasks/confirm', (req, res) => {
     return res.status(404).json({ success: false, error: 'Task not found.' });
   }
 
-  // In a real production app, we would verify the txSignature on the Solana blockchain
-  // to ensure the treasury actually received the exact amount of $EARN.
-  // For now, we activate the task.
-  db.tasks[taskIndex].status = 'active';
-  saveDb(db);
+  // In production, verify txSignature on Solana blockchain here
+  const task = db.tasks[taskIndex];
+  console.log(`Auto-Buy triggered for task ${taskId} with budget $${task.budgetUsd}`);
+  
+  // Trigger Backend Auto-Buy!
+  const swapResult = await autoBuyEarnFromTreasury(task.budgetUsd);
 
-  res.json({ success: true, message: 'Task activated successfully!', task: db.tasks[taskIndex] });
+  db.tasks[taskIndex].status = 'active';
+  
+  if (swapResult.success) {
+      db.tasks[taskIndex].rewardEarnRaw = swapResult.expectedEarnAmount;
+      saveDb(db);
+      res.json({ 
+          success: true, 
+          message: 'Task activated and Auto-Buy successful!', 
+          txid: swapResult.txid, 
+          task: db.tasks[taskIndex] 
+      });
+  } else {
+      saveDb(db);
+      res.json({ 
+          success: true, 
+          message: 'Task activated, but Auto-Buy delayed or failed (see logs).', 
+          error: swapResult.error 
+      });
+  }
 });
 
 // 4. VERIFY AND PAY TASK COMPLETION
