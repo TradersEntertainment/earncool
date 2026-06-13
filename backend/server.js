@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const nacl = require('tweetnacl');
 const bs58 = require('bs58');
+const axios = require('axios');
 const { getEarnPriceUsd, getSolPriceUsd, autoBuyEarnFromTreasury, TREASURY_PUBKEY } = require('./jupiter');
 
 // Security middleware
@@ -375,24 +376,22 @@ Here is everything you know about earn.cool:
    - Leaderboard: Shows the top earners (Workers) and top campaigns (Creators).
 5. Goal: Be extremely helpful, guide users on how to use the wallet, create tasks, stake, or trade, and keep them hyped about $EARN! Keep answers concise, highly structured, and engaging. Avoid long paragraphs, use bullet points where helpful.`;
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
+    const response = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
+      model: 'llama-3.1-8b-instant', // Highly fast and cost-effective llama 3.1 model on Groq
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: message }
+      ],
+      temperature: 0.7,
+      max_tokens: 800
+    }, {
       headers: {
         'Authorization': `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant', // Highly fast and cost-effective llama 3.1 model on Groq
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 800
-      })
+      }
     });
 
-    const data = await response.json();
+    const data = response.data;
     
     if (data.choices && data.choices[0] && data.choices[0].message) {
       res.json({

@@ -1,4 +1,5 @@
 const { Connection, Keypair, VersionedTransaction } = require('@solana/web3.js');
+const axios = require('axios');
 
 const EARN_TOKEN_MINT = '8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
@@ -26,28 +27,28 @@ const TREASURY_PUBKEY = treasuryKeypair ? treasuryKeypair.publicKey.toString() :
 // ------------------------------------------
 async function getEarnPriceUsd() {
     try {
-        const response = await fetch(`https://price.jup.ag/v6/price?ids=${EARN_TOKEN_MINT}`);
-        const data = await response.json();
+        const response = await axios.get(`https://price.jup.ag/v6/price?ids=${EARN_TOKEN_MINT}`);
+        const data = response.data;
         if (data && data.data && data.data[EARN_TOKEN_MINT]) {
             return data.data[EARN_TOKEN_MINT].price;
         }
         return 0;
     } catch (error) {
-        console.error('Error fetching EARN price:', error);
+        console.error('Error fetching EARN price:', error.message);
         return 0;
     }
 }
 
 async function getSolPriceUsd() {
     try {
-        const response = await fetch(`https://price.jup.ag/v6/price?ids=${SOL_MINT}`);
-        const data = await response.json();
+        const response = await axios.get(`https://price.jup.ag/v6/price?ids=${SOL_MINT}`);
+        const data = response.data;
         if (data && data.data && data.data[SOL_MINT]) {
             return data.data[SOL_MINT].price;
         }
         return 0;
     } catch (error) {
-        console.error('Error fetching SOL price:', error);
+        console.error('Error fetching SOL price:', error.message);
         return 0;
     }
 }
@@ -69,8 +70,8 @@ async function autoBuyEarnFromTreasury(usdAmount) {
 
         // 1. Get Quote
         const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${SOL_MINT}&outputMint=${EARN_TOKEN_MINT}&amount=${lamports}&slippageBps=500`;
-        const quoteResponse = await fetch(quoteUrl);
-        const quoteData = await quoteResponse.json();
+        const quoteResponse = await axios.get(quoteUrl);
+        const quoteData = quoteResponse.data;
         
         if (quoteData.error) throw new Error(`Jupiter Quote Error: ${quoteData.error}`);
 
@@ -81,13 +82,11 @@ async function autoBuyEarnFromTreasury(usdAmount) {
             wrapAndUnwrapSol: true
         };
 
-        const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(swapRequestBody)
+        const swapResponse = await axios.post('https://quote-api.jup.ag/v6/swap', swapRequestBody, {
+            headers: { 'Content-Type': 'application/json' }
         });
 
-        const swapData = await swapResponse.json();
+        const swapData = swapResponse.data;
         if (swapData.error) throw new Error(`Jupiter Swap Error: ${swapData.error}`);
 
         // 3. Sign and Execute via Web3
