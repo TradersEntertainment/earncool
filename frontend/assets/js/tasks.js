@@ -902,6 +902,7 @@ async function handleCreateCampaign(event) {
     try {
         const payload = {
             creatorAddress: state.wallet.address,
+            totalCostEarn: totalCost,
             task: {
                 type,
                 title,
@@ -913,7 +914,7 @@ async function handleCreateCampaign(event) {
             }
         };
         
-        const response = await fetch(`${API_BASE}/api/tasks`, {
+        const response = await fetch(`${API_BASE}/api/tasks/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -925,12 +926,18 @@ async function handleCreateCampaign(event) {
         overlay.classList.remove('active');
         
         if (data.success) {
-            state.wallet.balanceEARN = data.user.balanceEARN;
+            if (data.user && data.user.balanceEARN !== undefined) {
+                state.wallet.balanceEARN = data.user.balanceEARN;
+            } else {
+                state.wallet.balanceEARN -= totalCost;
+            }
             updateNavbarBalance();
             
             if (typeof fetchTasks === 'function') await fetchTasks();
             
-            addCampaignToMyList(data.task, totalCost);
+            if (data.task) {
+                addCampaignToMyList(data.task, totalCost);
+            }
             
             document.getElementById('createCampaignForm').reset();
             selectQualityFilter('all');
@@ -947,6 +954,7 @@ async function handleCreateCampaign(event) {
         showToast('Server communication error during campaign creation.', 'error');
     }
 }
+
 
 function addCampaignToMyList(task, cost) {
     const myCampaignsContainer = document.getElementById('myCampaignsList');

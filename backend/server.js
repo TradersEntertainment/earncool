@@ -152,48 +152,79 @@ app.get('/api/price', async (req, res) => {
   res.json({ success: true, earnPriceUsd: earnPrice, solPriceUsd: solPrice });
 });
 
-// 4. CREATE TASK (GENERATE TRANSFER INTENT)
+// 4. CREATE TASK (accepts frontend campaign payload)
 app.post('/api/tasks/create', async (req, res) => {
-  const { task, creatorAddress, usdBudget } = req.body;
+  const { task, creatorAddress, usdBudget, totalCostEarn } = req.body;
   
-  if (!task || !creatorAddress || !usdBudget) {
-    return res.status(400).json({ success: false, error: 'Missing data: task, creatorAddress, and usdBudget are required.' });
+  if (!task || !creatorAddress) {
+    return res.status(400).json({ success: false, error: 'Missing data: task and creatorAddress are required.' });
   }
   
   try {
-    const solPrice = await getSolPriceUsd();
-    if (!solPrice) throw new Error('Could not fetch SOL price');
-    const solAmount = usdBudget / solPrice;
-    
-    // Save pending task in memory/DB
     const db = loadDb();
-    const pendingTaskId = `task-${Date.now()}`;
-    db.tasks.unshift({
-      id: pendingTaskId,
-      type: task.type,
-      title: task.title,
-      link: task.link,
-      budgetUsd: usdBudget,
-      solAmount: solAmount,
+    const user = db.users[creatorAddress];
+    
+    // Calculate the cost in $EARN tokens
+    const rewardPerUser = task.reward || 100;
+    const capacity = task.capacity || 100;
+    const baseReward = rewardPerUser * capacity;
+    const fee = baseReward * 0.02;
+    let qualityFee = 0;
+    if (task.verifiedOnly) qualityFee = baseReward * 0.20;
+    else if (task.minSorsa > 0) qualityFee = baseReward * 0.15;
+    const totalCost = totalCostEarn || (baseReward + fee + qualityFee);
+    
+    // If user exists in DB, deduct balance
+    if (user) {
+      if (user.balanceEARN < totalCost) {
+        return res.status(400).json({ success: false, error: `Insufficient balance! Required: ${totalCost.toLocaleString()} $EARN, Balance: ${user.balanceEARN.toLocaleString()} $EARN.` });
+      }
+      user.balanceEARN -= totalCost;
+    }
+    
+    const newTaskId = `task-${Date.now()}`;
+    const newTask = {
+      id: newTaskId,
+      type: task.type || 'follow',
+      title: task.title || 'Untitled Task',
+      link: task.link || '',
+      reward: rewardPerUser,
+      budgetEarn: totalCost,
       creator: creatorAddress.slice(0, 6) + '...' + creatorAddress.slice(-4),
-      capacity: task.capacity || 100,
+      capacity: capacity,
       completedCount: 0,
       completedBy: [],
-      status: 'pending_payment'
+      verifiedOnly: task.verifiedOnly || false,
+      minSorsa: task.minSorsa || 0,
+      status: 'active'
+    };
+    
+    db.tasks.unshift(newTask);
+    
+    // Add platform commission to vault
+    const commission = fee + qualityFee;
+    db.vault.balance += commission;
+    db.vault.contributions.unshift({
+      time: 'just now',
+      amount: `${commission.toFixed(2)} $EARN`,
+      job: `#${newTaskId.slice(0, 8)}`,
+      reason: 'Campaign creation fee'
     });
+    if (db.vault.contributions.length > 50) db.vault.contributions.pop();
+    
     saveDb(db);
-
-    res.json({ 
-      success: true, 
-      taskId: pendingTaskId,
-      treasuryAddress: TREASURY_PUBKEY,
-      solAmount: solAmount
+    
+    res.json({
+      success: true,
+      task: newTask,
+      user: user || { balanceEARN: 0 }
     });
   } catch (error) {
     console.error('Task creation error:', error);
-    res.status(500).json({ success: false, error: 'Failed to create payment intent.' });
+    res.status(500).json({ success: false, error: 'Failed to create task.' });
   }
 });
+
 
 // 5. CONFIRM TASK PAYMENT & AUTO-BUY
 app.post('/api/tasks/confirm', async (req, res) => {

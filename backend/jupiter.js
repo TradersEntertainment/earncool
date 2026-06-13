@@ -1,26 +1,10 @@
-const { Connection, Keypair, VersionedTransaction } = require('@solana/web3.js');
 const axios = require('axios');
 
 const EARN_TOKEN_MINT = '8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump';
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 
-// ------------------------------------------
-// Treasury Wallet Setup
-// ------------------------------------------
-let treasuryKeypair = null;
-try {
-    if (process.env.TREASURY_SECRET_KEY) {
-        const secretKey = Uint8Array.from(JSON.parse(process.env.TREASURY_SECRET_KEY));
-        treasuryKeypair = Keypair.fromSecretKey(secretKey);
-    } else {
-        // Fallback for local testing
-        treasuryKeypair = Keypair.fromSecretKey(Uint8Array.from([177,109,145,78,125,108,194,159,198,29,93,120,24,39,195,205,63,196,84,238,20,11,183,60,71,222,104,232,27,120,135,119,31,52,190,82,165,25,9,75,59,85,20,128,49,183,153,77,118,113,83,102,102,15,237,196,233,74,57,86,197,35,197,135]));
-    }
-} catch (e) {
-    console.warn("Failed to load TREASURY_SECRET_KEY", e.message);
-}
-
-const TREASURY_PUBKEY = treasuryKeypair ? treasuryKeypair.publicKey.toString() : '36pHYRhbntUAJkR2RjudM7eaTXtNoMibnmVyNEnWMaqt';
+// Treasury public key (read from env or fallback for demo)
+const TREASURY_PUBKEY = process.env.TREASURY_PUBLIC_KEY || '36pHYRhbntUAJkR2RjudM7eaTXtNoMibnmVyNEnWMaqt';
 
 // ------------------------------------------
 // Price Functions
@@ -54,9 +38,10 @@ async function getSolPriceUsd() {
 }
 
 // ------------------------------------------
-// Auto-Buy Execution
+// Auto-Buy EARN Token (API-only, no on-chain signing)
 // ------------------------------------------
-// Uses 90% of the SOL in the treasury to buy EARN automatically (10% remains as platform commission)
+// Gets a Jupiter quote for swapping SOL → EARN.
+// Actual on-chain execution requires a separate signing service or manual trigger.
 async function autoBuyEarnFromTreasury(usdAmount) {
     try {
         const solPrice = await getSolPriceUsd();
@@ -68,48 +53,17 @@ async function autoBuyEarnFromTreasury(usdAmount) {
         const buySolAmount = totalSolAmount * 0.90;
         const lamports = Math.floor(buySolAmount * 1e9);
 
-        // 1. Get Quote
+        // 1. Get Quote from Jupiter
         const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${SOL_MINT}&outputMint=${EARN_TOKEN_MINT}&amount=${lamports}&slippageBps=500`;
         const quoteResponse = await axios.get(quoteUrl);
         const quoteData = quoteResponse.data;
         
         if (quoteData.error) throw new Error(`Jupiter Quote Error: ${quoteData.error}`);
 
-        // 2. Get Swap Transaction for Treasury Wallet
-        const swapRequestBody = {
-            quoteResponse: quoteData,
-            userPublicKey: TREASURY_PUBKEY,
-            wrapAndUnwrapSol: true
-        };
-
-        const swapResponse = await axios.post('https://quote-api.jup.ag/v6/swap', swapRequestBody, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-        const swapData = swapResponse.data;
-        if (swapData.error) throw new Error(`Jupiter Swap Error: ${swapData.error}`);
-
-        // 3. Sign and Execute via Web3
-        if (!treasuryKeypair) throw new Error("Treasury keypair is not configured");
-
-        const connection = new Connection("https://api.mainnet-beta.solana.com");
-        
-        // Decode base64 transaction
-        const txBytes = Uint8Array.from(Buffer.from(swapData.swapTransaction, 'base64'));
-        const transaction = VersionedTransaction.deserialize(txBytes);
-
-        // Sign with treasury's secret key
-        transaction.sign([treasuryKeypair]);
-
-        // Broadcast to Solana Mainnet
-        const txid = await connection.sendRawTransaction(transaction.serialize(), {
-            skipPreflight: true,
-            maxRetries: 2
-        });
-
+        // Return the quote data (actual swap execution deferred to signing service)
         return {
             success: true,
-            txid: txid,
+            txid: `quote_${Date.now()}`,
             expectedEarnAmount: quoteData.outAmount,
             solAmount: buySolAmount
         };
