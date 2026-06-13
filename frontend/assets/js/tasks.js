@@ -4,13 +4,27 @@ const API = window.location.hostname === 'localhost' || window.location.hostname
     ? '/api' 
     : 'https://earnc00l.up.railway.app/api';
 
+// Modal controls
+const openCreateTaskModalBtn = document.getElementById('openCreateTaskModal');
+const createTaskModal = document.getElementById('createTaskModal');
+const closeModalBtn = createTaskModal?.querySelector('.close-modal');
+
+openCreateTaskModalBtn?.addEventListener('click', () => {
+    createTaskModal.classList.remove('hidden');
+});
+
+closeModalBtn?.addEventListener('click', () => {
+    createTaskModal.classList.add('hidden');
+});
+
 // Render Tasks
 async function renderActiveTasks() {
     try {
         const response = await fetch(`${API}/tasks`);
         const data = await response.json();
         
-        const tasksList = document.getElementById('tasks-list');
+        const tasksList = document.getElementById('tasksContainer');
+        if (!tasksList) return;
         tasksList.innerHTML = '';
         
         if (!data.tasks || data.tasks.length === 0) {
@@ -44,22 +58,24 @@ async function renderActiveTasks() {
 }
 
 // Create Task Flow
-document.getElementById('create-task-btn')?.addEventListener('click', async () => {
+document.getElementById('createTaskForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
     if (!window.appState.wallet) {
         alert("Please connect your wallet first!");
         return;
     }
 
-    const type = document.getElementById('task-type').value;
-    const link = document.getElementById('task-link').value;
-    const budget = parseFloat(document.getElementById('task-budget').value);
+    const type = document.getElementById('taskType').value;
+    const link = document.getElementById('taskLink').value;
+    const budget = parseFloat(document.getElementById('taskBudget').value);
 
     if (!link || !budget || budget < 1) {
         alert("Please enter a valid link and minimum $1 budget.");
         return;
     }
 
-    const submitBtn = document.getElementById('create-task-btn');
+    const submitBtn = document.getElementById('createTaskSubmitBtn');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Creating...';
 
@@ -99,9 +115,6 @@ document.getElementById('create-task-btn')?.addEventListener('click', async () =
         
         if (window.appState.walletType === 'metamask') {
             submitBtn.innerHTML = '<i class="ri-loader-4-line spin"></i> Sending via MetaMask...';
-            // Wait, MetaMask Wallet Standard has slightly different API.
-            // Actually, we can use the signAndSendTransaction method from the standard if the mmClient returns a standard provider.
-            // Using signAndSendTransaction string from MetaMask directly
             const response = await window.appState.mmClient.signAndSendTransaction(transaction);
             signature = response.signature;
         } else {
@@ -132,8 +145,9 @@ document.getElementById('create-task-btn')?.addEventListener('click', async () =
         alert("Task Created successfully! " + confirmData.message);
         
         // Reset Form
-        document.getElementById('task-link').value = '';
-        document.getElementById('task-budget').value = '';
+        document.getElementById('taskLink').value = '';
+        document.getElementById('taskBudget').value = '';
+        createTaskModal.classList.add('hidden');
         renderActiveTasks();
 
     } catch (error) {

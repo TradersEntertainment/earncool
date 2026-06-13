@@ -14,11 +14,12 @@ const API = window.location.hostname === 'localhost' || window.location.hostname
 const EARN_MINT = '8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump';
 
 // UI Elements
-const connectBtn = document.getElementById('connect-wallet-btn');
-const walletInfo = document.getElementById('wallet-info');
-const shortAddress = document.getElementById('short-address');
-const solBalanceElem = document.getElementById('sol-balance');
-const earnBalanceElem = document.getElementById('earn-balance');
+const connectBtn = document.getElementById('connectWalletBtn');
+const walletInfo = document.getElementById('userProfile');
+const shortAddress = document.getElementById('walletAddressBtn');
+const solBalanceElem = document.getElementById('userSolBalance');
+const earnBalanceElem = document.getElementById('userEarnBalance');
+const earnPriceDisplay = document.getElementById('earnPriceDisplay');
 
 const walletModal = document.getElementById('wallet-modal');
 const closeWalletBtn = document.getElementById('close-wallet-btn');
@@ -99,9 +100,9 @@ btnMetamask?.addEventListener('click', async () => {
 
 function updateUI() {
     if (window.appState.wallet) {
-        connectBtn.style.display = 'none';
-        walletInfo.style.display = 'flex';
-        shortAddress.textContent = window.appState.wallet.slice(0, 4) + '...' + window.appState.wallet.slice(-4);
+        if (connectBtn) connectBtn.style.display = 'none';
+        if (walletInfo) walletInfo.classList.remove('hidden');
+        if (shortAddress) shortAddress.textContent = window.appState.wallet.slice(0, 4) + '...' + window.appState.wallet.slice(-4);
     }
 }
 
@@ -116,14 +117,21 @@ async function fetchPricesAndBalances() {
                 sol: data.solPriceUsd
             };
             
+            if (earnPriceDisplay && data.earnPriceUsd) {
+                earnPriceDisplay.textContent = `$${data.earnPriceUsd.toFixed(6)}`;
+            }
+            
             // Mock fetching wallet balance since we are vanilla
             window.appState.balances.solUsd = (1.5 * data.solPriceUsd).toFixed(2);
             window.appState.balances.earn = 125000;
             
-            solBalanceElem.textContent = `$${window.appState.balances.solUsd}`;
-            earnBalanceElem.textContent = `${window.appState.balances.earn.toLocaleString()} EARN`;
+            if (solBalanceElem) solBalanceElem.textContent = `1.50 SOL`;
+            if (earnBalanceElem) earnBalanceElem.textContent = `${window.appState.balances.earn.toLocaleString()} EARN`;
         }
     } catch (error) {
         console.error('Error fetching prices/balances:', error);
     }
 }
+
+// Initial load
+fetchPricesAndBalances();
