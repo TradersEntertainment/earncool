@@ -38,13 +38,11 @@ const authLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 app.use('/api/auth', authLimiter);
 
-// Serve Vite static files from dist
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-// Fallback for SPA routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-});
+// Serve Vite static files from dist (if they exist)
+const distPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
 
 // JSON File Database Setup (Uses mounted Railway Volume "/data" in production for persistence)
 const DB_PATH = process.env.NODE_ENV === 'production' ? '/data/database.json' : path.join(__dirname, 'database.json');
@@ -411,6 +409,16 @@ Here is everything you know about earn.cool:
   } catch (error) {
     console.error('Groq Chat Server Error:', error);
     res.status(500).json({ success: false, error: 'Internal server error while calling AI service.' });
+  }
+});
+
+// Fallback for SPA routing (only if frontend build exists, otherwise 404)
+app.get('*', (req, res) => {
+  const indexPath = path.join(__dirname, '../frontend/dist/index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).json({ success: false, error: 'Endpoint not found' });
   }
 });
 
