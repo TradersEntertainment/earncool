@@ -1310,3 +1310,26 @@ if (document.readyState === 'loading') {
     generateDynamicFavicon();
 }
 
+// Expose functions globally for legacy inline HTML onclick handlers
+window.showSection = showSection;
+window.openConnectWalletModal = openConnectWalletModal;
+window.closeConnectWalletModal = closeConnectWalletModal;
+window.simulateWalletConnection = simulateWalletConnection;
+window.openTxSignInModal = openTxSignInModal;
+window.backToWalletSelector = backToWalletSelector;
+window.toggleTxStartButton = toggleTxStartButton;
+window.executeTxSignIn = executeTxSignIn;
+window.updateNavbarBalance = updateNavbarBalance;
+window.toggleSimVerified = toggleSimVerified;
+window.toggleSimSorsa = toggleSimSorsa;
+window.openConnectSocialModal = openConnectSocialModal;
+window.closeConnectSocialModal = closeConnectSocialModal;
+window.simulateSocialAuth = simulateSocialAuth;
+window.showToast = showToast;
+window.toggleFaqAccordion = toggleFaqAccordion;
+window.handleVaultCheck = handleVaultCheck;
+window.handleVaultClear = handleVaultClear;
+window.toggleQuickJobsAccordion = toggleQuickJobsAccordion;
+window.applyQuickJobPreset = applyQuickJobPreset;
+window.selectQualityFilter = selectQualityFilter;
+

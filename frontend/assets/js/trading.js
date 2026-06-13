@@ -411,3 +411,11 @@ function renderRecentTrades() {
         list.appendChild(div);
     });
 }
+
+// Expose functions globally for legacy inline HTML onclick handlers
+window.switchTradeMode = switchTradeMode;
+window.setTradeAmount = setTradeAmount;
+window.calculateTradeReturn = calculateTradeReturn;
+window.initTradingChart = initTradingChart;
+window.executeTokenTrade = executeTokenTrade;
+window.renderRecentTrades = renderRecentTrades;

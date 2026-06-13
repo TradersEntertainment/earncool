@@ -985,3 +985,18 @@ function addCampaignToMyList(task, cost) {
     
     myCampaignsContainer.insertBefore(card, myCampaignsContainer.firstChild);
 }
+
+// Expose functions globally for legacy inline HTML onclick handlers
+window.filterTasks = filterTasks;
+window.closeTaskDetailModal = closeTaskDetailModal;
+window.toggleWurkSubmissions = toggleWurkSubmissions;
+window.executeTaskAction = executeTaskAction;
+window.openTaskDetail = openTaskDetail;
+window.switchProofMethod = switchProofMethod;
+window.checkManualProofInput = checkManualProofInput;
+window.verifyTaskCompletion = verifyTaskCompletion;
+window.triggerTokenRainAnimation = triggerTokenRainAnimation;
+window.updateFormPlaceholders = updateFormPlaceholders;
+window.calculateCampaignCost = calculateCampaignCost;
+window.handleCreateCampaign = handleCreateCampaign;
+window.addCampaignToMyList = addCampaignToMyList;
