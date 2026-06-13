@@ -8,7 +8,9 @@ window.appState = {
     mmClient: null
 };
 
-const API = '/api';
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? '/api' 
+    : 'https://earnc00l.up.railway.app/api';
 const EARN_MINT = '8s7AXPTwGCr6hGkrYVx1iHQhjRrfYn7DoecwMuCXpump';
 
 // UI Elements

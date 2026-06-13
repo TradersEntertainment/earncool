@@ -1,6 +1,8 @@
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, Connection } from '@solana/web3.js';
 
-const API = '/api';
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? '/api' 
+    : 'https://earnc00l.up.railway.app/api';
 
 // Render Tasks
 async function renderActiveTasks() {
