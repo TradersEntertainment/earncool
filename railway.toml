@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "cd frontend && npm install && npx vite build && cd ../backend && npm install"
+
+[deploy]
+startCommand = "cd backend && node server.js"
