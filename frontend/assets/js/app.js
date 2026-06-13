@@ -219,11 +219,22 @@ async function simulateWalletConnection(providerName) {
             const publicKey = response.publicKey.toString();
             
             // 2. Formulate cryptographic message signing challenge
-            const message = `Welcome to earn.cool! Sign this message to authenticate your wallet ownership.\n\nNonce: ${Date.now()}`;
+            const nonce = Date.now();
+            const message = [
+                'earn.cool — Wallet Authentication',
+                '',
+                'This signature verifies that you are the owner of this wallet.',
+                'It does NOT authorize any transaction or token transfer.',
+                '',
+                `Domain: ${window.location.hostname}`,
+                `Wallet: ${publicKey.slice(0, 8)}...${publicKey.slice(-6)}`,
+                `Issued: ${new Date().toISOString()}`,
+                `Nonce: ${nonce}`
+            ].join('\n');
             const encodedMessage = new TextEncoder().encode(message);
             
-            document.getElementById('walletLoadingTitle').innerText = 'Signature Requested...';
-            document.getElementById('walletLoadingDesc').innerText = 'Please sign the security message inside your wallet extension to verify ownership.';
+            document.getElementById('walletLoadingTitle').innerText = 'Signature Requested';
+            document.getElementById('walletLoadingDesc').innerText = 'Approve the message in your wallet. This is a READ-ONLY signature — no SOL or tokens will be spent.';
             
             const signedResult = await provider.signMessage(encodedMessage, "utf8");
             const signature = bufferToBase58(signedResult.signature || signedResult.signatureBytes);
