@@ -1,3 +1,5 @@
+const state = window.state;
+
 // Initial Mock Tasks Database
 const dbTasks = [
     {

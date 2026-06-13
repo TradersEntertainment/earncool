@@ -59,6 +59,8 @@ const state = {
     }
 };
 
+window.state = state;
+
 // Simulated Worker Names & Completed Tasks for Live Stream
 const mockTickNames = [
     'sol_raider', 'alpha_chaser', 'pump_guy', 'degensol', 'cryptogirl_7', 'x_builder', 'memeLord',

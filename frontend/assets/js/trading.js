@@ -1,3 +1,5 @@
+const state = window.state;
+
 // Candle Stick Database (simulated price movement history)
 const dbCandles = [
     { time: '12:00', open: 0.000185, high: 0.000195, low: 0.000180, close: 0.000192 },
