@@ -1253,7 +1253,10 @@ async function handleWalletPayment() {
         
         // If web3 and window.solana is active, build real transaction
         if (window.solana && window.solanaWeb3 && state.wallet.provider && !state.wallet.provider.includes('Demo')) {
-            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'), 'confirmed');
+            const rpcUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'https://api.devnet.solana.com'
+                : 'https://api.mainnet-beta.solana.com';
+            const connection = new solanaWeb3.Connection(rpcUrl, 'confirmed');
             const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
                     fromPubkey: new solanaWeb3.PublicKey(state.wallet.address),
