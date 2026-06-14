@@ -1255,7 +1255,7 @@ async function handleWalletPayment() {
         if (window.solana && window.solanaWeb3 && state.wallet.provider && !state.wallet.provider.includes('Demo')) {
             const rpcUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
                 ? 'https://api.devnet.solana.com'
-                : 'https://api.mainnet-beta.solana.com';
+                : 'https://rpc.ankr.com/solana';
             const connection = new solanaWeb3.Connection(rpcUrl, 'confirmed');
             const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
