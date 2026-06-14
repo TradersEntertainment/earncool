@@ -11,8 +11,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Solana Web3 SDK -->
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  <script type="module" crossorigin src="/assets/index-D8W8AshL.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-FXpWJSsw.css">
+  <script type="module" crossorigin src="/assets/index-BSycyFX_.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DzB-XzOK.css">
 </head>
 <body>
 
@@ -228,176 +228,534 @@
 
             <!-- SECTION 3: CAMPAIGN CREATOR (ADVERTISER CAMPAIGN PANEL) -->
             <section id="section-creator" class="page-section">
-                <div style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem;">
-                    
-                    <!-- Creator Form Card -->
-                    <div class="glass-card">
-                        
-                        <!-- Quick Jobs Panel Accordion (matching earn.cool preset screenshot) -->
-                        <div class="preset-list-container active" id="quickJobsAccordion">
-                            <button type="button" class="preset-category-header" onclick="toggleQuickJobsAccordion()">
-                                <span style="display: flex; align-items: center; gap: 0.5rem; font-weight: 800;">
-                                    <i data-lucide="zap" style="color: var(--secondary); width: 18px;"></i>
-                                    Quick jobs (Pre-set Templates)
-                                </span>
-                                <i data-lucide="chevron-down" id="quickJobsChevron" style="width: 18px; transition: transform 0.3s ease; transform: rotate(180deg);"></i>
-                            </button>
-                            
-                            <div class="preset-items-grid" id="quickJobsItemsGrid">
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('follow_std')">
-                                    <span><i data-lucide="twitter" style="width: 14px; margin-right: 4px; color: #1da1f2; vertical-align: middle;"></i> X Followers (Standard Follow)</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">100 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('follow_ver')">
-                                    <span><i data-lucide="badge-check" style="width: 14px; margin-right: 4px; color: #1da1f2; vertical-align: middle;"></i> X Followers Verified (Verified) <span class="preset-badge-blue">NEW</span></span>
-                                    <span style="font-weight: 700; color: var(--secondary);">120 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('raid_ver')">
-                                    <span><i data-lucide="badge-check" style="width: 14px; margin-right: 4px; color: #1da1f2; vertical-align: middle;"></i> X Raid Verified (Verified Raid) <span class="preset-badge-blue">NEW</span></span>
-                                    <span style="font-weight: 700; color: var(--secondary);">150 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('raid_std')">
-                                    <span><i data-lucide="twitter" style="width: 14px; margin-right: 4px; color: #1da1f2; vertical-align: middle;"></i> X Raid (Standard Raid)</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">80 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('raid_sorsa')">
-                                    <span><i data-lucide="shield-check" style="width: 14px; margin-right: 4px; color: var(--primary); vertical-align: middle;"></i> X Raid Sorsa > 0 (Secure Raid) <span class="preset-badge-orange">NEW</span></span>
-                                    <span style="font-weight: 700; color: var(--secondary);">115 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('repost')">
-                                    <span><i data-lucide="repeat" style="width: 14px; margin-right: 4px; color: var(--primary); vertical-align: middle;"></i> Reposts (Repost)</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">60 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('likes')">
-                                    <span><i data-lucide="heart" style="width: 14px; margin-right: 4px; color: var(--accent); vertical-align: middle;"></i> Likes (Likes)</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">40 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('bookmarks')">
-                                    <span><i data-lucide="bookmark" style="width: 14px; margin-right: 4px; color: var(--text-warning); vertical-align: middle;"></i> Bookmarks (Bookmarks)</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">50 $EARN / entry</span>
-                                </button>
-                                <button type="button" class="preset-item-btn" onclick="applyQuickJobPreset('comments')">
-                                    <span><i data-lucide="message-square" style="width: 14px; margin-right: 4px; color: var(--secondary); vertical-align: middle;"></i> X Comments (Comments)</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">90 $EARN / entry</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem; margin-top: 1rem;">Launch Task Campaign</h2>
-                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">
-                            Bring your project to life on X (Twitter)! Reach our wide community of AI agents and crypto investors directly.
-                        </p>
-                        
-                        <form id="createCampaignForm" onsubmit="handleCreateCampaign(event)">
-                            <div class="form-section">
-                                <div class="form-group">
-                                    <label for="taskType">Interaction Type</label>
-                                    <select class="form-select" id="taskType" onchange="updateFormPlaceholders()">
-                                        <option value="follow">X Follow (Follow Account)</option>
-                                        <option value="like">X Like (Like Tweet)</option>
-                                        <option value="repost">X Repost Tweet</option>
-                                        <option value="feedback">Feedback (Visit &amp; Review)</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="taskTitle" id="lblTaskTitle">Campaign Title</label>
-                                    <input type="text" class="form-input" id="taskTitle" placeholder="e.g. Follow Solana earn.cool Official Account" required>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="taskLink" id="lblTaskLink">X Link / Target URL</label>
-                                    <input type="url" class="form-input" id="taskLink" placeholder="e.g. https://x.com/earndotcool" required>
-                                    <span class="form-hint">The full URL where the worker will be redirected to perform the task.</span>
-                                </div>
-                                
-                                <div class="form-row-split">
-                                    <div class="form-group">
-                                        <label for="rewardPerUser">Reward per Participant</label>
-                                        <input type="number" class="form-input" id="rewardPerUser" step="any" min="0.0001" value="100" oninput="calculateCampaignCost()" required>
-                                        <span class="form-hint">Amount to pay each worker ($EARN)</span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="maxParticipants">Total Participants</label>
-                                        <input type="number" class="form-input" id="maxParticipants" min="1" value="250" oninput="calculateCampaignCost()" required>
-                                        <span class="form-hint">Maximum number of workers who can complete this task</span>
-                                    </div>
-                                </div>
-
-                                <!-- Audience Quality Target Filters -->
-                                <div class="form-group">
-                                    <label>Audience Quality Filter</label>
-                                    <div class="quality-filter-group" id="campaignQualityGroup">
-                                        <button type="button" class="quality-filter-btn active" id="qBtn-all" onclick="selectQualityFilter('all')">
-                                            <i data-lucide="users" style="width: 14px;"></i>
-                                            <span>All Users</span>
-                                        </button>
-                                        <button type="button" class="quality-filter-btn" id="qBtn-verified" onclick="selectQualityFilter('verified')">
-                                            <i data-lucide="badge-check" style="width: 14px; color: #1da1f2;"></i>
-                                            <span>X Verified (Verified)</span>
-                                            <span style="font-size: 0.65rem; background: var(--primary); padding: 0.05rem 0.25rem; border-radius: 4px; color: white; font-weight: 800;">+20%</span>
-                                        </button>
-                                        <button type="button" class="quality-filter-btn" id="qBtn-sorsa" onclick="selectQualityFilter('sorsa')">
-                                            <i data-lucide="shield-check" style="width: 14px; color: var(--secondary);"></i>
-                                            <span>Sorsa Score > 0</span>
-                                            <span style="font-size: 0.65rem; background: var(--primary); padding: 0.05rem 0.25rem; border-radius: 4px; color: white; font-weight: 800;">+15%</span>
-                                        </button>
-                                    </div>
-                                    <input type="hidden" id="campaignQualityFilter" value="all">
-                                </div>
-                                
-                                <!-- Cost breakdown -->
-                                <div class="form-price-summary">
-                                    <div class="summary-row">
-                                        <span>Task Reward Pool:</span>
-                                        <span id="summaryTotalReward">25,000 $EARN</span>
-                                    </div>
-                                    <div class="summary-row">
-                                        <span>Platform Service Fee (2%):</span>
-                                        <span id="summaryFee">500 $EARN</span>
-                                    </div>
-                                    <div class="summary-row" id="summaryQualityRow" style="display: none; color: var(--primary); font-weight: 600;">
-                                        <span id="summaryQualityLabel">Verified Targeting (+20%):</span>
-                                        <span id="summaryQualityFee">5,000 $EARN</span>
-                                    </div>
-                                    <div class="summary-row total">
-                                        <span>Total Locked Budget:</span>
-                                        <span id="summaryTotalCost">25,500 $EARN</span>
-                                    </div>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem;">
-                                    <i data-lucide="wallet-cards" style="width: 18px;"></i> Publish Campaign & Lock Budget
-                                </button>
-                            </div>
-                        </form>
+                
+                <!-- STEP 1: JOB SETUP -->
+                <div id="creator-step1-panel" class="creator-step-panel active">
+                    <div class="creator-steps-header">
+                        <h2 class="creator-steps-title">Create a Job</h2>
+                        <p class="creator-steps-subtitle">Create jobs, set rewards, and launch when ready.</p>
                     </div>
-                    
-                    <!-- Creator Info & Campaigns Tracker -->
-                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                        <div class="glass-card" style="border-left: 4px solid var(--primary);">
-                            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <i data-lucide="shield-check" style="color: var(--primary);"></i>
-                                Secure Escrow
-                            </h3>
-                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-                                Your campaign budget is securely locked in our platform escrow. Payments are only released to workers who pass verification.
-                            </p>
-                        </div>
+
+                    <!-- 1. Quick Jobs Card -->
+                    <div class="wurk-section-card">
+                        <h3 class="wurk-section-title">
+                            <span class="step-number-icon">1</span>
+                            Quick jobs
+                        </h3>
+                        <p class="wurk-section-desc">Select a preset job and paste your link to get started instantly</p>
                         
-                        <!-- My Campaigns Progress tracker -->
-                        <div class="glass-card" style="flex: 1;">
-                            <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem;">My Campaigns</h3>
-                            <div id="myCampaignsList" style="display: flex; flex-direction: column; gap: 1.25rem;">
-                                <!-- Dynamically populated by JS campaigns owned by user -->
-                                <div style="text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.9rem;">
-                                    <i data-lucide="folder-open" style="width: 32px; height: 32px; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                                    <p>You haven't launched any campaigns yet.</p>
+                        <div class="categories-accordion-grid">
+                            <!-- X/Twitter Accordion -->
+                            <button type="button" class="category-acc-btn" id="acc-btn-x_twitter" onclick="toggleCreatorCategory('x_twitter')">
+                                <span><i data-lucide="twitter" style="width: 14px; margin-right: 4px; color: #1da1f2; vertical-align: middle;"></i> X / Twitter <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">10</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-x_twitter" class="category-acc-content">
+                                <div class="presets-list">
+                                    <button type="button" class="preset-row-btn" id="preset-row-x_views" onclick="selectCreatorPreset('x_views')">
+                                        <span>X views <span class="preset-badge-blue" style="margin-left: 6px;">NEW</span></span>
+                                        <span>$0.005 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-x_followers" onclick="selectCreatorPreset('x_followers')">
+                                        <span>X followers</span>
+                                        <span>$0.03 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-x_followers_verified" onclick="selectCreatorPreset('x_followers_verified')">
+                                        <span>X followers verified <span class="preset-badge-blue" style="margin-left: 6px;">NEW</span></span>
+                                        <span>$0.05 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-x_raid_verified" onclick="selectCreatorPreset('x_raid_verified')">
+                                        <span>X Raid Verified <span class="preset-badge-blue" style="margin-left: 6px;">NEW</span></span>
+                                        <span>$0.035 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-x_raid" onclick="selectCreatorPreset('x_raid')">
+                                        <span>X Raid</span>
+                                        <span>$0.02 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-x_raid_sorsa" onclick="selectCreatorPreset('x_raid_sorsa')">
+                                        <span>X Raid Sorsa > 0</span>
+                                        <span>$0.025 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-repost" onclick="selectCreatorPreset('repost')">
+                                        <span>Reposts</span>
+                                        <span>$0.01 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-likes" onclick="selectCreatorPreset('likes')">
+                                        <span>Likes</span>
+                                        <span>$0.008 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-bookmarks" onclick="selectCreatorPreset('bookmarks')">
+                                        <span>Bookmarks</span>
+                                        <span>$0.01 / entry</span>
+                                    </button>
+                                    <button type="button" class="preset-row-btn" id="preset-row-comments" onclick="selectCreatorPreset('comments')">
+                                        <span>X comments</span>
+                                        <span>$0.02 / entry</span>
+                                    </button>
                                 </div>
+                            </div>
+
+                            <!-- Other placeholder buttons to replicate wurk.fun -->
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('dex_rockets')">
+                                <span><i data-lucide="rocket" style="width: 14px; margin-right: 4px; color: #e11d48; vertical-align: middle;"></i> Dex Rockets</span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-dex_rockets" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Dex Rockets presets coming soon! Under development.
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('telegram')">
+                                <span><i data-lucide="send" style="width: 14px; margin-right: 4px; color: #0284c7; vertical-align: middle;"></i> Telegram</span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-telegram" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Telegram channel join/post presets coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('youtube')">
+                                <span><i data-lucide="youtube" style="width: 14px; margin-right: 4px; color: #dc2626; vertical-align: middle;"></i> YouTube <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">3</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-youtube" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    YouTube subscribe & like presets coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('instagram')">
+                                <span><i data-lucide="instagram" style="width: 14px; margin-right: 4px; color: #db2777; vertical-align: middle;"></i> Instagram <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">3</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-instagram" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Instagram follow & like presets coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('votes')">
+                                <span><i data-lucide="check-square" style="width: 14px; margin-right: 4px; color: #16a34a; vertical-align: middle;"></i> Votes <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">6</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-votes" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Upvotes (CoinGecko, CoinMarketCap) coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('discord')">
+                                <span><i data-lucide="message-square" style="width: 14px; margin-right: 4px; color: #4f46e5; vertical-align: middle;"></i> Discord</span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-discord" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Discord guild join presets coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('hey_lol')">
+                                <span><i data-lucide="smile" style="width: 14px; margin-right: 4px; color: #ca8a04; vertical-align: middle;"></i> hey.lol <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">5</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-hey_lol" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    hey.lol presets coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('base')">
+                                <span><i data-lucide="shield" style="width: 14px; margin-right: 4px; color: #2563eb; vertical-align: middle;"></i> Base <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">4</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-base" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Base blockchain tasks coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('zora')">
+                                <span><i data-lucide="compass" style="width: 14px; margin-right: 4px; color: #ea580c; vertical-align: middle;"></i> Zora <span style="font-size:0.7rem; opacity:0.6; margin-left:4px;">2</span></span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-zora" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Zora NFT minting presets coming soon!
+                                </div>
+                            </div>
+
+                            <button type="button" class="category-acc-btn" onclick="toggleCreatorCategory('farcaster')">
+                                <span><i data-lucide="users" style="width: 14px; margin-right: 4px; color: #7c3aed; vertical-align: middle;"></i> Farcaster</span>
+                                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                            </button>
+                            <div id="acc-content-farcaster" class="category-acc-content">
+                                <div class="presets-list" style="padding: 0.5rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                                    Farcaster cast & follow presets coming soon!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expandable Presets Config Panel (Shared or absolute) -->
+                        <div id="quick-preset-setup" class="preset-setup-panel">
+                            <h4 style="font-size: 1rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                                <span id="setup-preset-name">Configure Preset Job</span>
+                                <span id="preset-unit-price" style="font-size:0.8rem; font-weight:700; color:var(--secondary);">$0.03 / action</span>
+                            </h4>
+                            
+                            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">
+                                Price: <span id="preset-price-label" style="color: var(--text-success); font-weight:800;">$1.02 (34 actions)</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display:block; margin-bottom: 0.35rem;">Amount (Action Count)</label>
+                                <div class="slider-container">
+                                    <input type="range" min="10" max="1000" step="5" value="34" class="wurk-slider" id="preset-action-slider" oninput="syncActionSlider(this.value)">
+                                    <input type="number" class="wurk-slider-input" id="preset-action-input" value="34" min="10" max="1000" oninput="syncActionInput(this.value)">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display:block; margin-bottom: 0.35rem;">X Target Link (URL)</label>
+                                <input type="url" class="form-input" id="preset-link-input" placeholder="e.g. https://x.com/FundedAndChill" required>
+                                <span class="form-hint" style="font-size: 0.75rem; color: var(--text-muted);">Enter the target profile, tweet, or page URL.</span>
+                            </div>
+
+                            <div style="text-align: right; margin-top: 0.5rem;">
+                                <button type="button" class="btn-lets-go" onclick="proceedToPayment('preset')">
+                                    Let's go <i data-lucide="arrow-right" style="width: 16px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OR separator -->
+                    <div class="wurk-or-separator">
+                        <span class="wurk-or-badge">OR</span>
+                    </div>
+
+                    <!-- 2. Custom Raid Card -->
+                    <div class="wurk-section-card">
+                        <h3 class="wurk-section-title">
+                            <span class="step-number-icon">2</span>
+                            Custom Raid
+                        </h3>
+                        <p class="wurk-section-desc">Enter an X post URL to boost with reposts, comments, likes and more</p>
+                        
+                        <div style="display: flex; gap: 0.75rem;">
+                            <input type="url" class="form-input" id="custom-raid-url" style="flex:1;" placeholder="https://x.com/username/status/123456789">
+                            <button type="button" class="btn btn-primary" onclick="proceedToPayment('custom_raid')" style="padding: 0.75rem 1.5rem; font-weight: 700; flex-shrink: 0;">
+                                Fetch Post
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- OR separator -->
+                    <div class="wurk-or-separator">
+                        <span class="wurk-or-badge">OR</span>
+                    </div>
+
+                    <!-- 3. Custom Jobs Card -->
+                    <div class="wurk-section-card">
+                        <h3 class="wurk-section-title">
+                            <span class="step-number-icon">3</span>
+                            Custom jobs
+                        </h3>
+                        <p class="wurk-section-desc">Create your own task description and start challenges, jobs and creative campaigns for your community</p>
+                        
+                        <div style="text-align: left;">
+                            <button type="button" class="btn btn-outline" id="btn-toggle-custom-job" onclick="toggleCustomJobForm()" style="font-weight: 700;">
+                                Create Custom Job
+                            </button>
+                        </div>
+
+                        <!-- Expandable Custom Job Form (inline) -->
+                        <div id="custom-job-form" class="preset-setup-panel" style="margin-top: 1.25rem;">
+                            <h4 style="font-size: 1rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem;">Custom Job Details</h4>
+                            
+                            <div class="form-group">
+                                <label style="font-size: 0.8rem; color: var(--text-muted); font-weight:700;">Campaign Title</label>
+                                <input type="text" class="form-input" id="custom-job-title" placeholder="e.g. Try our platform and write a short review tweet" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="font-size: 0.8rem; color: var(--text-muted); font-weight:700;">X target Link / Target URL</label>
+                                <input type="url" class="form-input" id="custom-job-link" placeholder="e.g. https://earn.cool/feedback" required>
+                            </div>
+
+                            <div class="form-row-split" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                                <div class="form-group">
+                                    <label style="font-size: 0.8rem; color: var(--text-muted); font-weight:700;">Reward per Participant ($EARN)</label>
+                                    <input type="number" class="form-input" id="custom-job-reward" min="1" value="100" oninput="calculateCustomJobCosts()">
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size: 0.8rem; color: var(--text-muted); font-weight:700;">Total Participants</label>
+                                    <input type="number" class="form-input" id="custom-job-capacity" min="1" value="100" oninput="calculateCustomJobCosts()">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label style="font-size: 0.8rem; color: var(--text-muted); font-weight:700;">Audience Quality Filter</label>
+                                <div class="quality-filter-group" style="display:flex; gap:0.5rem; margin-top:0.35rem;">
+                                    <button type="button" class="quality-filter-btn active" id="cj-q-all" onclick="setCustomJobFilter('all')">All</button>
+                                    <button type="button" class="quality-filter-btn" id="cj-q-verified" onclick="setCustomJobFilter('verified')">Verified (+20%)</button>
+                                    <button type="button" class="quality-filter-btn" id="cj-q-sorsa" onclick="setCustomJobFilter('sorsa')">Sorsa > 0 (+15%)</button>
+                                </div>
+                                <input type="hidden" id="custom-job-filter-val" value="all">
+                            </div>
+
+                            <div class="form-price-summary" style="padding:1rem; border-radius:10px; background:rgba(0,0,0,0.2); border:1px solid var(--border-color);">
+                                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.4rem;">
+                                    <span>Reward Pool:</span>
+                                    <span id="cj-summary-pool">10,000 $EARN</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-muted); margin-bottom:0.4rem;">
+                                    <span>Platform Fee (2%):</span>
+                                    <span id="cj-summary-fee">200 $EARN</span>
+                                </div>
+                                <div style="display:none; justify-content:space-between; font-size:0.85rem; color:var(--primary); margin-bottom:0.4rem;" id="cj-summary-quality-row">
+                                    <span id="cj-summary-quality-lbl">Verified Target (+20%):</span>
+                                    <span id="cj-summary-quality-fee">2,000 $EARN</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.95rem; font-weight:800; color:#fff; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.5rem;">
+                                    <span>Total USD Budget:</span>
+                                    <span id="cj-summary-usd">$2.04 USD</span>
+                                </div>
+                            </div>
+
+                            <div style="text-align: right; margin-top: 0.5rem;">
+                                <button type="button" class="btn-lets-go" onclick="proceedToPayment('custom_job')">
+                                    Let's go <i data-lucide="arrow-right" style="width: 16px;"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Campaigns Card inside Step 1 (moved for layout cleanliness) -->
+                    <div class="glass-card" style="margin-top: 2rem;">
+                        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 1.25rem; display:flex; align-items:center; gap:0.5rem;">
+                            <i data-lucide="folder-kanban" style="color:var(--primary); width:18px;"></i>
+                            My Campaigns
+                        </h3>
+                        <div id="myCampaignsList" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <div style="text-align: center; padding: 2.5rem 0; color: var(--text-muted); font-size: 0.9rem;">
+                                <i data-lucide="folder-open" style="width: 32px; height: 32px; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                                <p>You haven't launched any campaigns yet.</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- STEP 2: PAYMENT DETAILS -->
+                <div id="creator-step2-panel" class="creator-step-panel">
+                    <div class="creator-steps-header">
+                        <h2 class="creator-steps-title">Payment Details</h2>
+                        <p class="creator-steps-subtitle">Confirm your job parameters and send the payment to activate.</p>
+                    </div>
+
+                    <div class="wurk-split-grid">
+                        
+                        <!-- Left Column: Payment options -->
+                        <div>
+                            <div class="glass-card" style="padding: 1.5rem; display:flex; flex-direction:column; gap:1.5rem;">
+                                
+                                <div>
+                                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); display:block; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">Choose Payment Currency</label>
+                                    <div class="currency-selector-row">
+                                        <button type="button" class="currency-btn active" id="pay-curr-sol" onclick="selectPaymentCurrency('SOL')">
+                                            <span style="display:inline-block; width:14px; height:14px; background:linear-gradient(135deg, #a855f7, #06b6d4); border-radius:50%;"></span>
+                                            SOL
+                                        </button>
+                                        <button type="button" class="currency-btn" id="pay-curr-earn" onclick="selectPaymentCurrency('EARN')">
+                                            <span>🪙</span>
+                                            $EARN
+                                        </button>
+                                        <button type="button" class="currency-btn" id="pay-curr-usdc" onclick="selectPaymentCurrency('USDC')">
+                                            <span style="display:inline-block; width:14px; height:14px; background:#2775ca; border-radius:50%; text-align:center; color:white; font-size:8px; line-height:14px;">$</span>
+                                            USDC
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Total display -->
+                                <div style="background: rgba(0,0,0,0.25); border:1px solid var(--border-color); padding: 1.5rem; border-radius:12px; text-align:center;">
+                                    <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted); display:block; margin-bottom: 0.25rem; text-transform:uppercase;">Total Amount</span>
+                                    <span id="payment-total-amount" style="font-size: 1.85rem; font-weight: 900; color: var(--text-primary); display:block; font-family: monospace;">0.0150 SOL</span>
+                                    <span id="payment-total-usd" style="font-size: 0.9rem; font-weight:700; color: var(--text-success); display:block; margin-top:0.2rem;">$1.02 USD</span>
+                                </div>
+
+                                <!-- Method 1: Connect wallet and pay -->
+                                <div class="payment-method-card">
+                                    <div class="payment-method-header">
+                                        <span class="step-number-icon" style="width:20px; height:20px; font-size:0.7rem;">1</span>
+                                        Quick Payment with Wallet
+                                        <span style="margin-left:auto;"><i data-lucide="wallet" style="width:16px; color:var(--secondary);"></i></span>
+                                    </div>
+                                    <div id="wallet-payment-action-box" style="text-align:center; padding: 0.5rem 0;">
+                                        <!-- Connect wallet or trigger Solana transaction builder -->
+                                        <button type="button" class="btn btn-primary" id="btn-wallet-pay-action" style="width:100%; padding:0.85rem; font-weight:800;" onclick="handleWalletPayment()">
+                                            Connect Wallet
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- OR separator -->
+                                <div class="wurk-or-separator" style="margin: 0.5rem 0;">
+                                    <span class="wurk-or-badge" style="font-size:0.7rem;">OR</span>
+                                </div>
+
+                                <!-- Method 2: Pay from simulated balance -->
+                                <div class="payment-method-card">
+                                    <div class="payment-method-header">
+                                        <span class="step-number-icon" style="width:20px; height:20px; font-size:0.7rem;">2</span>
+                                        Pay from Balance
+                                        <span style="margin-left:auto;"><i data-lucide="database" style="width:16px; color:var(--primary);"></i></span>
+                                    </div>
+                                    <div style="font-size:0.8rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                                        <span>Your Available Balance:</span>
+                                        <span id="pay-method-available-balance" style="font-weight:700; color:#fff;">4.25 SOL</span>
+                                    </div>
+                                    <button type="button" class="btn btn-outline" id="btn-balance-pay-action" style="width:100%; padding:0.85rem; font-weight:800;" onclick="handleBalancePayment()">
+                                        Pay with SOL balance
+                                    </button>
+                                </div>
+
+                                <!-- OR separator -->
+                                <div class="wurk-or-separator" style="margin: 0.5rem 0;">
+                                    <span class="wurk-or-badge" style="font-size:0.7rem;">OR</span>
+                                </div>
+
+                                <!-- Method 3: Manual Payment -->
+                                <div class="payment-method-card">
+                                    <div class="payment-method-header">
+                                        <span class="step-number-icon" style="width:20px; height:20px; font-size:0.7rem;">3</span>
+                                        Manual Payment
+                                        <span style="margin-left:auto;"><i data-lucide="qr-code" style="width:16px; color:var(--accent);"></i></span>
+                                    </div>
+                                    
+                                    <div class="manual-payment-layout">
+                                        <div class="manual-payment-qr" id="manual-payment-qr-container">
+                                            <!-- Simple API MOCK QR CODE -->
+                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=92x92&data=36pHYRhbntUAJkR2RjudM7eaTXtNoMibnmVyNEnWMaqt" style="width:92px; height:92px;" alt="Solana Wallet QR">
+                                        </div>
+                                        
+                                        <div class="manual-payment-fields">
+                                            <div class="form-group" style="margin-bottom:0;">
+                                                <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Recipient Address</span>
+                                                <div class="copy-field-wrap">
+                                                    <span class="copy-field-val" id="manual-recipient-addr">36pHYRhbntUAJkR2RjudM7eaTXtNoMibnmVyNEnWMaqt</span>
+                                                    <button type="button" class="copy-field-btn" onclick="copyText('manual-recipient-addr', 'Recipient address copied!')">Copy</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" style="margin-bottom:0;">
+                                                <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Exact Amount (SOL)</span>
+                                                <div class="copy-field-wrap">
+                                                    <span class="copy-field-val" id="manual-exact-amount">0.0150</span>
+                                                    <button type="button" class="copy-field-btn" onclick="copyText('manual-exact-amount', 'Exact SOL amount copied!')">Copy</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; border-top:1px solid rgba(255,255,255,0.03); padding-top:0.5rem; margin-top:0.25rem;">
+                                        Please send the exact amount of SOL to the wallet address above. The transaction will be verified on-chain.
+                                    </p>
+                                    <button type="button" class="btn-lets-go" id="btn-manual-confirm" onclick="handleManualPaymentConfirmation()" style="padding:0.75rem;">
+                                        I Have Made the Payment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Live Overview & Preview -->
+                        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                            
+                            <!-- Job Overview Card -->
+                            <div class="job-overview-card">
+                                <h3 style="font-size:1.1rem; font-weight:800; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.5rem;">
+                                    Overview
+                                </h3>
+                                
+                                <div class="job-overview-row">
+                                    <span>Platform Vault (10%):</span>
+                                    <span id="overview-vault-fee">~55.4 $EARN</span>
+                                </div>
+                                <div class="job-overview-row">
+                                    <span>Number of Winners:</span>
+                                    <span id="overview-winners-count">34</span>
+                                </div>
+                                <div class="job-overview-row">
+                                    <span>Reward per Winner:</span>
+                                    <span id="overview-reward-per-winner">~147.2 $EARN</span>
+                                </div>
+                                
+                                <div class="job-overview-row total">
+                                    <span>You pay:</span>
+                                    <span id="overview-total-pay-desc">0.015 SOL ($1.02)</span>
+                                </div>
+                            </div>
+
+                            <!-- Job details card -->
+                            <div class="job-overview-card">
+                                <h3 style="font-size:1.1rem; font-weight:800; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.5rem;">
+                                    Job Details
+                                </h3>
+                                
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; font-size:0.8rem;">
+                                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:0.5rem; border-radius:8px;">
+                                        <div style="color:var(--text-muted); font-size:0.7rem; font-weight:700;">JOB ID</div>
+                                        <div id="details-job-id" style="font-weight:700; color:#fff; font-family:monospace;">draft-6e80c7</div>
+                                    </div>
+                                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:0.5rem; border-radius:8px;">
+                                        <div style="color:var(--text-muted); font-size:0.7rem; font-weight:700;">COMMUNITY</div>
+                                        <div style="font-weight:700; color:#fff;">All</div>
+                                    </div>
+                                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:0.5rem; border-radius:8px;">
+                                        <div style="color:var(--text-muted); font-size:0.7rem; font-weight:700;">ONLY VERIFIED</div>
+                                        <div id="details-verified" style="font-weight:700; color:#fff;">No</div>
+                                    </div>
+                                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:0.5rem; border-radius:8px;">
+                                        <div style="color:var(--text-muted); font-size:0.7rem; font-weight:700;">CREATED</div>
+                                        <div style="font-weight:700; color:#fff;">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live preview card -->
+                            <div class="job-overview-card" style="border:1px dashed var(--secondary);">
+                                <h3 style="font-size:1rem; font-weight:800; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:0.5rem; display:flex; align-items:center; justify-content:space-between;">
+                                    <span>Job Preview</span>
+                                    <span style="font-size:0.65rem; background:rgba(6,182,212,0.1); border:1px solid var(--secondary); color:var(--secondary); padding:0.1rem 0.4rem; border-radius:4px;">Live Preview</span>
+                                </h3>
+                                
+                                <div style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:10px; border:1px solid var(--border-color);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                        <span style="font-size:0.75rem; color:var(--text-muted); display:flex; align-items:center; gap:0.25rem;">
+                                            <span style="width:8px; height:8px; background:var(--secondary); border-radius:50%;"></span>
+                                            om8R...4s9 (You)
+                                        </span>
+                                        <span id="preview-tag-type" class="task-badge follow" style="font-size:0.65rem;">Follow</span>
+                                    </div>
+                                    <h4 id="preview-task-title" style="font-size:0.9rem; font-weight:700; margin-bottom:0.5rem; line-height:1.4;">Official X Account Follow</h4>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.03); padding-top:0.5rem; margin-top:0.5rem;">
+                                        <div>
+                                            <span style="font-size:0.65rem; color:var(--text-muted); display:block;">Reward</span>
+                                            <span style="font-size:0.85rem; font-weight:800; color:var(--text-success);" id="preview-reward-val">100 $EARN</span>
+                                        </div>
+                                        <span id="preview-capacity" style="font-size:0.75rem; color:var(--text-muted);">Entries: 0/34</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-outline btn-back-step" onclick="backToStep1()" style="padding:0.75rem; font-weight:800;">
+                                <i data-lucide="chevron-left" style="width:16px; display:inline-block; vertical-align:middle; margin-right:4px;"></i>
+                                Change parameters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </section>
 
             <!-- SECTION 4: TRADING TERMINAL ($EARN BONDING CURVE & PUMP.FUN CLONE) -->

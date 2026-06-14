@@ -2562,6 +2562,444 @@ main {
     }
 }
 
+/* ==========================================================================
+   WURK.FUN REDESIGN CAMPAIGN CREATOR STYLES
+   ========================================================================== */
+
+/* Step Header */
+.creator-steps-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+.creator-steps-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #fff 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.creator-steps-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* Step Container Display */
+.creator-step-panel {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+.creator-step-panel.active {
+    display: block;
+}
+
+/* Step Indicators inside sections */
+.step-number-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--text-primary);
+    color: var(--bg-dark);
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.85rem;
+    margin-right: 0.75rem;
+    vertical-align: middle;
+}
+
+/* 1. Quick Jobs - Accordion styling */
+.wurk-section-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: var(--transition-normal);
+}
+.wurk-section-card:hover {
+    border-color: rgba(6, 182, 212, 0.25);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+.wurk-section-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.wurk-section-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* Accordion Grid */
+.categories-accordion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+.category-acc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.category-acc-btn:hover, .category-acc-btn.active {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--secondary);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+}
+.category-acc-btn i.chevron-icon {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+}
+.category-acc-btn.active i.chevron-icon {
+    transform: rotate(180deg);
+}
+
+/* Accordion Expandable Content */
+.category-acc-content {
+    grid-column: 1 / -1;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 0.25rem;
+}
+.category-acc-content.active {
+    max-height: 800px;
+    border: 1px solid rgba(6, 182, 212, 0.1);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Presets List Inside Content */
+.presets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.preset-row-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition-fast);
+    border-radius: 6px;
+}
+.preset-row-btn:hover, .preset-row-btn.active {
+    background: rgba(255, 255, 255, 0.03);
+    color: #fff;
+    padding-left: 1.25rem;
+}
+.preset-row-btn.active {
+    background: rgba(6, 182, 212, 0.08);
+    border-left: 3px solid var(--secondary);
+}
+
+/* Preset Action Setup Panel */
+.preset-setup-panel {
+    grid-column: 1 / -1;
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: rgba(6, 182, 212, 0.03);
+    border: 1px dashed rgba(6, 182, 212, 0.2);
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+.preset-setup-panel.active {
+    display: flex;
+}
+
+/* Sliders */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.wurk-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+.wurk-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--secondary);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    transition: transform 0.1s;
+}
+.wurk-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+.wurk-slider-input {
+    width: 80px;
+    padding: 0.4rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Green Lets Go button */
+.btn-lets-go {
+    background: #10b981 !important;
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.btn-lets-go:hover {
+    background: #059669 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+/* OR separator */
+.wurk-or-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 800;
+    font-size: 0.75rem;
+    margin: 1.5rem 0;
+}
+.wurk-or-separator::before, .wurk-or-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.wurk-or-separator:not(:empty)::before {
+    margin-right: .75em;
+}
+.wurk-or-separator:not(:empty)::after {
+    margin-left: .75em;
+}
+.wurk-or-badge {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+
+/* Step 2 Payment Details Split Layout */
+.wurk-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+}
+
+/* Currency Select Option */
+.currency-selector-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.currency-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.85rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.currency-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+.currency-btn.active {
+    border-color: var(--secondary);
+    color: #fff;
+    background: rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.15);
+}
+
+/* Payment Method Cards */
+.payment-method-card {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.payment-method-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 0.6rem;
+}
+.payment-method-badge {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* Manual Address QR Layout */
+.manual-payment-layout {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+.manual-payment-qr {
+    width: 100px;
+    height: 100px;
+    background: white;
+    padding: 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.manual-payment-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* Copy fields */
+.copy-field-wrap {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.copy-field-val {
+    flex: 1;
+    padding: 0.45rem 0.75rem;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.copy-field-btn {
+    padding: 0.45rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-left: 1px solid var(--border-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    transition: 0.2s;
+}
+.copy-field-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Overview right side columns */
+.job-overview-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.job-overview-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+.job-overview-row.highlight {
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 0.5rem;
+}
+.job-overview-row.total {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 0.75rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-success);
+}
+
+/* Back button */
+.btn-back-step {
+    background: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-muted) !important;
+}
+.btn-back-step:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+    color: #fff !important;
+}
+
+@media (max-width: 900px) {
+    .wurk-split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 
 

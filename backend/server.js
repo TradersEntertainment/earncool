@@ -197,7 +197,9 @@ app.post('/api/auth', (req, res) => {
 // 2. GET ACTIVE TASKS
 app.get('/api/tasks', (req, res) => {
   const db = loadDb();
-  res.json({ success: true, tasks: db.tasks });
+  // Public market only gets active tasks
+  const activeTasks = db.tasks.filter(t => t.status === 'active');
+  res.json({ success: true, tasks: activeTasks });
 });
 
 // 3. GET CURRENT PRICES
@@ -207,9 +209,9 @@ app.get('/api/price', async (req, res) => {
   res.json({ success: true, earnPriceUsd: earnPrice, solPriceUsd: solPrice });
 });
 
-// 4. CREATE TASK (accepts frontend campaign payload)
+// 4. CREATE TASK (accepts frontend campaign payload - creates pending task draft)
 app.post('/api/tasks/create', async (req, res) => {
-  const { task, creatorAddress, usdBudget, totalCostEarn } = req.body;
+  const { task, creatorAddress, usdBudget, totalCostEarn, totalCostSol } = req.body;
   
   if (!task || !creatorAddress) {
     return res.status(400).json({ success: false, error: 'Missing data: task and creatorAddress are required.' });
@@ -227,15 +229,7 @@ app.post('/api/tasks/create', async (req, res) => {
     let qualityFee = 0;
     if (task.verifiedOnly) qualityFee = baseReward * 0.20;
     else if (task.minSorsa > 0) qualityFee = baseReward * 0.15;
-    const totalCost = totalCostEarn || (baseReward + fee + qualityFee);
-    
-    // If user exists in DB, deduct balance
-    if (user) {
-      if (user.balanceEARN < totalCost) {
-        return res.status(400).json({ success: false, error: `Insufficient balance! Required: ${totalCost.toLocaleString()} $EARN, Balance: ${user.balanceEARN.toLocaleString()} $EARN.` });
-      }
-      user.balanceEARN -= totalCost;
-    }
+    const totalCostE = totalCostEarn || (baseReward + fee + qualityFee);
     
     const newTaskId = `task-${Date.now()}`;
     const newTask = {
@@ -244,42 +238,32 @@ app.post('/api/tasks/create', async (req, res) => {
       title: task.title || 'Untitled Task',
       link: task.link || '',
       reward: rewardPerUser,
-      budgetEarn: totalCost,
+      budgetEarn: totalCostE,
+      budgetSol: totalCostSol || 0.015,
+      budgetUsd: usdBudget || 1.02,
       creator: creatorAddress.slice(0, 6) + '...' + creatorAddress.slice(-4),
+      creatorFullAddress: creatorAddress,
       capacity: capacity,
       completedCount: 0,
       completedBy: [],
       verifiedOnly: task.verifiedOnly || false,
       minSorsa: task.minSorsa || 0,
-      status: 'active'
+      status: 'pending' // starts as pending, waiting for payment
     };
     
     db.tasks.unshift(newTask);
-    
-    // Add platform commission to vault
-    const commission = fee + qualityFee;
-    db.vault.balance += commission;
-    db.vault.contributions.unshift({
-      time: 'just now',
-      amount: `${commission.toFixed(2)} $EARN`,
-      job: `#${newTaskId.slice(0, 8)}`,
-      reason: 'Campaign creation fee'
-    });
-    if (db.vault.contributions.length > 50) db.vault.contributions.pop();
-    
     saveDb(db);
     
     res.json({
       success: true,
       task: newTask,
-      user: user || { balanceEARN: 0 }
+      user: user || { balanceEARN: 1250.0, balanceSOL: 4.25 }
     });
   } catch (error) {
     console.error('Task creation error:', error);
-    res.status(500).json({ success: false, error: 'Failed to create task.' });
+    res.status(500).json({ success: false, error: 'Failed to create task draft.' });
   }
 });
-
 
 // 5. CONFIRM TASK PAYMENT & AUTO-BUY
 app.post('/api/tasks/confirm', async (req, res) => {
@@ -289,38 +273,126 @@ app.post('/api/tasks/confirm', async (req, res) => {
     return res.status(400).json({ success: false, error: 'taskId and txSignature are required.' });
   }
 
-  const db = loadDb();
-  const taskIndex = db.tasks.findIndex(t => t.id === taskId);
-  
-  if (taskIndex === -1) {
-    return res.status(404).json({ success: false, error: 'Task not found.' });
+  try {
+    const db = loadDb();
+    const taskIndex = db.tasks.findIndex(t => t.id === taskId);
+    
+    if (taskIndex === -1) {
+      return res.status(404).json({ success: false, error: 'Task not found.' });
+    }
+
+    const task = db.tasks[taskIndex];
+    console.log(`Auto-Buy triggered for task ${taskId} with budget $${task.budgetUsd}`);
+    
+    // Trigger Backend Auto-Buy!
+    const swapResult = await autoBuyEarnFromTreasury(task.budgetUsd || 1.02);
+
+    db.tasks[taskIndex].status = 'active';
+    
+    if (swapResult.success) {
+        db.tasks[taskIndex].rewardEarnRaw = swapResult.expectedEarnAmount;
+        // platform commission contribution to vault
+        const commission = (task.reward || 100) * (task.capacity || 100) * 0.10;
+        db.vault.balance += commission;
+        db.vault.contributions.unshift({
+          time: 'just now',
+          amount: `${commission.toFixed(2)} $EARN`,
+          job: `#${taskId.slice(0, 8)}`,
+          reason: 'Campaign creation fee (Auto-Buy 10%)'
+        });
+        if (db.vault.contributions.length > 50) db.vault.contributions.pop();
+        
+        saveDb(db);
+        res.json({ 
+            success: true, 
+            message: 'Task activated and Auto-Buy successful!', 
+            txid: swapResult.txid, 
+            task: db.tasks[taskIndex] 
+        });
+    } else {
+        // Fallback: set rewardEarnRaw using static calculation
+        db.tasks[taskIndex].rewardEarnRaw = Math.floor((task.reward || 100) * (task.capacity || 100) * 1e6);
+        saveDb(db);
+        res.json({ 
+            success: true, 
+            message: 'Task activated, but Auto-Buy delayed or failed (see logs).', 
+            error: swapResult.error,
+            task: db.tasks[taskIndex]
+        });
+    }
+  } catch (error) {
+    console.error('Confirm payment error:', error);
+    res.status(500).json({ success: false, error: 'Confirm payment execution error' });
+  }
+});
+
+// 6. PAY TASK WITH SOL/EARN BALANCE
+app.post('/api/tasks/pay-balance', async (req, res) => {
+  const { taskId, creatorAddress, currency } = req.body;
+  if (!taskId || !creatorAddress) {
+    return res.status(400).json({ success: false, error: 'taskId and creatorAddress are required.' });
   }
 
-  // In production, verify txSignature on Solana blockchain here
-  const task = db.tasks[taskIndex];
-  console.log(`Auto-Buy triggered for task ${taskId} with budget $${task.budgetUsd}`);
-  
-  // Trigger Backend Auto-Buy!
-  const swapResult = await autoBuyEarnFromTreasury(task.budgetUsd);
+  try {
+    const db = loadDb();
+    const taskIndex = db.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex === -1) {
+      return res.status(404).json({ success: false, error: 'Task not found.' });
+    }
+    const task = db.tasks[taskIndex];
+    const user = db.users[creatorAddress];
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found.' });
+    }
 
-  db.tasks[taskIndex].status = 'active';
-  
-  if (swapResult.success) {
-      db.tasks[taskIndex].rewardEarnRaw = swapResult.expectedEarnAmount;
-      saveDb(db);
-      res.json({ 
-          success: true, 
-          message: 'Task activated and Auto-Buy successful!', 
-          txid: swapResult.txid, 
-          task: db.tasks[taskIndex] 
+    if (currency === 'SOL') {
+      const costSol = task.budgetSol || 0.015;
+      if (user.balanceSOL < costSol) {
+        return res.status(400).json({ success: false, error: `Insufficient SOL balance! Required: ${costSol} SOL, Balance: ${user.balanceSOL} SOL.` });
+      }
+      user.balanceSOL -= costSol;
+      task.status = 'active';
+
+      // Trigger auto-buy!
+      const swapResult = await autoBuyEarnFromTreasury(task.budgetUsd);
+      if (swapResult.success) {
+        task.rewardEarnRaw = swapResult.expectedEarnAmount;
+      } else {
+        task.rewardEarnRaw = Math.floor((task.reward || 100) * (task.capacity || 100) * 1e6);
+      }
+      
+      const commission = (task.reward || 100) * (task.capacity || 100) * 0.10;
+      db.vault.balance += commission;
+      db.vault.contributions.unshift({
+        time: 'just now',
+        amount: `${commission.toFixed(2)} $EARN`,
+        job: `#${taskId.slice(0, 8)}`,
+        reason: 'Campaign creation fee (Balance 10%)'
       });
-  } else {
-      saveDb(db);
-      res.json({ 
-          success: true, 
-          message: 'Task activated, but Auto-Buy delayed or failed (see logs).', 
-          error: swapResult.error 
-      });
+      if (db.vault.contributions.length > 50) db.vault.contributions.pop();
+    } else {
+      // Pay with EARN balance
+      const costEarn = task.budgetEarn || 0;
+      if (user.balanceEARN < costEarn) {
+        return res.status(400).json({ success: false, error: `Insufficient $EARN balance! Required: ${costEarn} $EARN, Balance: ${user.balanceEARN} $EARN.` });
+      }
+      user.balanceEARN -= costEarn;
+      task.status = 'active';
+      task.rewardEarnRaw = Math.floor(costEarn * 1e6); // raw microtokens
+
+      db.vault.balance += costEarn * 0.10; // platform commission
+    }
+
+    saveDb(db);
+    res.json({
+      success: true,
+      message: 'Campaign successfully paid and activated!',
+      task,
+      user
+    });
+  } catch (error) {
+    console.error('Pay balance error:', error);
+    res.status(500).json({ success: false, error: 'Failed to process balance payment.' });
   }
 });
 
